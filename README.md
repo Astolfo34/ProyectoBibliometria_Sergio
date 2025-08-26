@@ -14,4 +14,5 @@ Como principal entorno de desarrollo se trabajara con python y sus librerias par
 
 # Integrantes
 - Jhon Sebastian Alzate Andica
-- Yeison X 
+- Yeison X
+- Kevin Steven Velásquez Arango
