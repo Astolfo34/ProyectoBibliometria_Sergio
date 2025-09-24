@@ -13,12 +13,23 @@ from scraping.scraping import extraer_articulos, guardar_articulos_bibtex
 import os
 # Importar función para guardar HTML
 from html_structure.save_html_selenium import save_html
+import subprocess
+import sys
 
 # Configuración y constantes
 URL_BIBLIOTECA = "https://library.uniquindio.edu.co/databases"  # Mantener la URL general
 NOMBRES_BASES = ["Springer", "ScienceDirect", "IEEE"]
 TERMINOS_BUSQUEDA = ["Computational Thinking", "Abstraction"]
 CARPETA_DATA = "data"
+
+def check_and_setup_env():
+    # Check if the virtual environment exists
+    if not os.path.exists('venv'):
+        print("El entorno virtual no está configurado. Creándolo ahora...")
+        if os.name == 'nt':  # Windows
+            subprocess.run(['config\\setup_env.bat'], shell=True)
+        else:  # Linux/MacOS
+            subprocess.run(['bash', 'config/setup_env.sh'])
 
 def main():
 	import shutil
@@ -61,6 +72,9 @@ def main():
 	finally:
 		driver.quit()
 		shutil.rmtree(temp_profile_dir, ignore_errors=True)
+
+# Call the function to check and set up the environment
+check_and_setup_env()
 
 if __name__ == "__main__":
 	print("=== Iniciando scraping automatizado y guardado en carpeta 'data' ===")
