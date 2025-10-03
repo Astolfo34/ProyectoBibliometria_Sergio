@@ -1,9 +1,5 @@
 """
-Módulo navigation.py
---------------------
 Funciones para navegación y búsqueda en portales académicos.
-Autor: [Tu Nombre]
-Fecha: 2025-09-23
 Descripción: Este módulo contiene funciones para navegar y buscar en portales de bases de datos académicas.
 """
 from selenium.webdriver.common.by import By
