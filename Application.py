@@ -2,8 +2,6 @@
 Application.py
 --------------
 Script principal para la automatización de scraping y guardado de artículos científicos en formato BibTeX.
-Autor: [Tu Nombre]
-Fecha: 2025-09-23
 Descripción: Orquesta el flujo de scraping, desde el login, navegación, búsqueda y guardado de resultados.
 """
 
@@ -19,7 +17,7 @@ import sys
 # Configuración y constantes
 URL_BIBLIOTECA = "https://library.uniquindio.edu.co/databases"  # Mantener la URL general
 NOMBRES_BASES = ["Springer", "ScienceDirect", "IEEE"]
-TERMINOS_BUSQUEDA = ["Computational Thinking", "Abstraction"]
+TERMINOS_BUSQUEDA = ["generative artificial intelligence","Computational Thinking", "AI in Education"]
 CARPETA_DATA = "data"
 
 def check_and_setup_env():
@@ -67,7 +65,7 @@ def main():
 				buscar_en_base(driver, url_base, base, termino)
 				time.sleep(2)
 				save_html(driver, f"{base}_html", f"resultados_{base}_{termino.replace(' ', '_')}.html")
-				articulos = extraer_articulos(driver, base)
+				articulos = extraer_articulos(driver, base, max_resultados=1000)
 				guardar_articulos_bibtex(articulos, base, termino, CARPETA_DATA)
 	finally:
 		driver.quit()

@@ -1,9 +1,5 @@
 """
-Módulo selenium_setup.py
-------------------------
 Configuración del driver de Selenium para automatización de navegador.
-Autor: [Tu Nombre]
-Fecha: 2025-09-23
 Descripción: Este módulo configura y retorna el driver de Selenium para Chrome, compatible con Linux y Windows.
 """
 
