@@ -8,6 +8,7 @@ Descripción: Orquesta el flujo de scraping, desde el login, navegación, búsqu
 from selenium_scripts.selenium_setup import configurar_driver
 from selenium_scripts.navigation import login_portal_universidad, obtener_enlaces_bases, buscar_en_base, validar_con_google
 from scraping.scraping import extraer_articulos, guardar_articulos_bibtex
+from similarity.analysis import run_similarity_analysis
 import os
 # Importar función para guardar HTML
 from html_structure.save_html_selenium import save_html
@@ -78,6 +79,10 @@ if __name__ == "__main__":
 	print("=== Iniciando scraping automatizado y guardado en carpeta 'data' ===")
 	main()
 	print("=== Proceso de scraping finalizado ===")
+
+if __name__ == "__main__":
+    file_path = "data/unified_articles.csv"  # asegúrate de tenerlo listo
+    run_similarity_analysis(file_path) 
 
 
 
