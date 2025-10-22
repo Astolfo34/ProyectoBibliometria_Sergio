@@ -49,6 +49,10 @@ tfidf_matrix = vectorizador.fit_transform(abstracts_vis)
 # --- Similitud coseno ---
 sim_matrix = cosine_similarity(tfidf_matrix)
 
+# Crear la carpeta 'data_graficos' si no existe
+data_graficos_path = os.path.join(os.path.dirname(__file__), 'data_graficos')
+os.makedirs(data_graficos_path, exist_ok=True)
+
 # --- Clustering jerárquico ---
 def clustering_jerarquico(sim_matrix, metodo, labels):
     print(f"\nGenerando dendrograma con método: {metodo}")
@@ -72,7 +76,12 @@ def clustering_jerarquico(sim_matrix, metodo, labels):
     plt.xlabel("Abstracts")
     plt.ylabel("Distancia")
     plt.tight_layout()
-    plt.show()
+
+    # Guardar el gráfico en la carpeta 'data_graficos'
+    grafico_path = os.path.join(data_graficos_path, f'dendrograma_{metodo}.png')
+    plt.savefig(grafico_path)
+    print(f"Gráfico guardado en: {grafico_path}")
+    plt.close()
 
 # --- Ejecutar los 3 métodos ---
 metodos = ['single', 'complete', 'average']

@@ -9,6 +9,8 @@ from html_structure.save_html_selenium import save_html
 import subprocess
 import sys
 
+import unificar
+
 # Configuración y constantes
 URL_BIBLIOTECA = "https://library.uniquindio.edu.co/databases"  # Mantener la URL general
 NOMBRES_BASES = ["Springer", "ScienceDirect", "IEEE"]
@@ -73,6 +75,7 @@ if __name__ == "__main__":
 	print("=== Iniciando scraping automatizado y guardado en carpeta 'data' ===")
 	main()
 	print("=== Proceso de scraping finalizado ===")
+	unificar.unificar() # unificamos los bib para obtener el archivo que scara los datos necesarios para los paises
 
 if __name__ == "__main__":
     file_path = "data/unified_articles.csv"  # asegúrate de tenerlo listo
