@@ -114,10 +114,10 @@ def print_report(components, top_k=10):
 
 def main():
     parser = argparse.ArgumentParser(description="Identificar componentes fuertemente conexas (SCC) en el grafo.")
-    parser.add_argument('--graphml', type=str, help="Ruta al archivo .graphml")
-    parser.add_argument('--edges', type=str, help="Ruta al CSV de aristas (source,target,weight)")
-    parser.add_argument('--outdir', type=str, default='scc_out', help="Directorio de salida")
-    parser.add_argument('--export-top', type=int, default=0, help="Exportar subgrafo GraphML de las N mayores SCC")
+    parser.add_argument('--graphml', type=str, default=os.path.join(os.path.dirname(__file__), 'salida_grafo', 'grafo.graphml'), help="Ruta al archivo .graphml")
+    parser.add_argument('--edges', type=str, default=os.path.join(os.path.dirname(__file__), 'salida_grafo', 'grafo_edges.csv'), help="Ruta al CSV de aristas (source,target,weight)")
+    parser.add_argument('--outdir', type=str, default=os.path.join(os.path.dirname(__file__), 'scc_out'), help="Directorio de salida")
+    parser.add_argument('--export-top', type=int, default=10, help="Exportar subgrafo GraphML de las N mayores SCC (por defecto 10)")
     parser.add_argument('--top-report', type=int, default=20, help="Cuántas SCC mostrar en el reporte")
     args = parser.parse_args()
 

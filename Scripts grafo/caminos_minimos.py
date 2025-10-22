@@ -32,8 +32,8 @@ except Exception:
     raise
 
 # ---------- Configuración por defecto (ajusta rutas si quieres) ----------
-DEFAULT_GRAPHML = os.path.join(os.path.dirname(__file__), '..', 'Scripts grafo', 'salida_grafo', 'grafo.graphml')
-DEFAULT_EDGES_CSV = os.path.join(os.path.dirname(__file__), '..', 'Scripts grafo', 'salida_grafo', 'grafo_edges.csv')
+DEFAULT_GRAPHML = os.path.join(os.path.dirname(__file__), 'salida_grafo', 'grafo.graphml')
+DEFAULT_EDGES_CSV = os.path.join(os.path.dirname(__file__), 'salida_grafo', 'grafo_edges.csv')
 
 # ---------- Carga del grafo ----------
 def load_graph(graphml_path=None, edges_csv=None, directed=True):
@@ -202,15 +202,15 @@ def graph_stats_on_distances(distances):
 # ---------- CLI ----------
 def main():
     parser = argparse.ArgumentParser(description="Calcular caminos mínimos en el grafo de citaciones.")
-    parser.add_argument('--graphml', type=str, help="Ruta al grafo .graphml")
-    parser.add_argument('--edges', type=str, help="Ruta al CSV de aristas (source,target,weight)")
+    parser.add_argument('--graphml', type=str, default=DEFAULT_GRAPHML, help="Ruta al grafo .graphml")
+    parser.add_argument('--edges', type=str, default=DEFAULT_EDGES_CSV, help="Ruta al CSV de aristas (source,target,weight)")
     parser.add_argument('--cost-mode', type=str, choices=['inv','1minus','unit'], default='inv',
                         help="Cómo convertir weight -> cost (default inv = 1/weight)")
     parser.add_argument('--dijkstra', nargs='*', help="Si se pasan dos nodos S T: calcula Dijkstra S->T; si un solo nodo S: calcula Dijkstra S->todos")
     parser.add_argument('--allpairs', choices=['floyd','dijkstra'], help="Calcular todas las parejas (peligro de coste si grafo grande)")
     parser.add_argument('--all-dijkstra', action='store_true', help="Ejecutar Dijkstra desde todos los nodos (más escalable que floyd)")
     parser.add_argument('--nodes-limit', type=int, help="Limitar número de orígenes en all-pairs (para pruebas)")
-    parser.add_argument('--outdir', type=str, default='resultado_caminos', help="Directorio de salida para CSVs")
+    parser.add_argument('--outdir', type=str, default=os.path.join(os.path.dirname(__file__), 'resultado_caminos'), help="Directorio de salida para CSVs")
     args = parser.parse_args()
 
     G = load_graph(graphml_path=args.graphml or DEFAULT_GRAPHML, edges_csv=args.edges or DEFAULT_EDGES_CSV)
@@ -263,7 +263,13 @@ def main():
         print("Estadísticas all-pairs (dijkstra):", stats)
         return
 
-    print("Nada solicitado: usa --dijkstra S [T] o --allpairs floyd|dijkstra o --all-dijkstra")
+    # Automatización: Ejecutar Dijkstra desde todos los nodos si no se especifican argumentos
+    print("No se especificaron argumentos, ejecutando Dijkstra desde todos los nodos por defecto.")
+    distances, paths = all_pairs_dijkstra(G, weight_attr='cost')
+    save_distances_csv(distances, os.path.join(args.outdir, 'allpairs_dijkstra_distances.csv'))
+    save_paths_csv(paths, os.path.join(args.outdir, 'allpairs_dijkstra_paths.csv'))
+    stats = graph_stats_on_distances(distances)
+    print("Estadísticas all-pairs (dijkstra):", stats)
 
 if __name__ == '__main__':
     main()

@@ -94,6 +94,14 @@ plt.barh(palabras_grafico[::-1], frecuencias_grafico[::-1], color='skyblue')
 plt.xlabel("Frecuencia")
 plt.title("Top 15 palabras/frases más relevantes en abstracts")
 plt.tight_layout()
-plt.show()
+
+# Crear la carpeta 'data_graficos' si no existe
+data_graficos_path = os.path.join(os.path.dirname(__file__), 'data_graficos')
+os.makedirs(data_graficos_path, exist_ok=True)
+
+# Guardar el gráfico en la carpeta 'data_graficos'
+grafico_path = os.path.join(data_graficos_path, 'top15_palabras_frecuentes.png')
+plt.savefig(grafico_path)
+print(f"Gráfico guardado en: {grafico_path}")
 
 

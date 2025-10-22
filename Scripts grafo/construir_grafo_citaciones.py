@@ -210,9 +210,9 @@ def build_citation_graph_optimized(entries, title_weight=0.7, author_weight=0.3,
 # --- Guardar salidas (sanitiza atributos para GraphML) ---
 def export_graph(G, outdir, prefix='grafo'):
     os.makedirs(outdir, exist_ok=True)
-    graphml_path = os.path.join(outdir, f"{prefix}.graphml")
-    edges_csv_path = os.path.join(outdir, f"{prefix}_edges.csv")
-    adj_json_path = os.path.join(outdir, f"{prefix}_adj.json")
+    graphml_path = os.path.join(os.path.dirname(__file__), 'salida_grafo', 'grafo.graphml')
+    edges_csv_path = os.path.join(os.path.dirname(__file__), 'salida_grafo', 'grafo_edges.csv')
+    adj_json_path = os.path.join(os.path.dirname(__file__), 'salida_grafo', 'grafo_adj.json')
 
     if nx:
         # Crear una copia "saneada" del grafo transformando listas/dicts a strings
@@ -282,7 +282,7 @@ def export_graph(G, outdir, prefix='grafo'):
 def main():
     parser = argparse.ArgumentParser(description="Construir grafo de citaciones a partir de archivo unificado BibTeX-like.")
     parser.add_argument('--input', '-i', required=False, default=os.path.join(os.path.dirname(os.path.dirname(__file__)), "productosUnificados", "productos_unificados.txt"), help="Archivo de entrada (productosUnificados/productos_unificados.txt por defecto)")
-    parser.add_argument('--outdir', '-o', required=False, default='salida_grafo', help="Directorio de salida")
+    parser.add_argument('--outdir', '-o', required=False, default=os.path.join(os.path.dirname(__file__), 'salida_grafo'), help="Directorio de salida")
     parser.add_argument('--threshold', '-t', type=float, default=0.60, help="Umbral final de similitud para inferir citación (0-1)")
     parser.add_argument('--title-threshold', type=float, default=0.50, help="Umbral mínimo de similitud de título para generar candidatos (0-1)")
     parser.add_argument('--no-progress', action='store_true', help="Desactivar barra de progreso")
