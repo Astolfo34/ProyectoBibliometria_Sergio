@@ -7,7 +7,7 @@ import pandas as pd
 
 # Rutas
 ruta_archivo = os.path.join(os.path.dirname(os.path.dirname(__file__)), "productosUnificados", "productosUnificados.txt")
-salida_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "salida_grafo")
+salida_dir = "Scripts grafo/salida_grafo"
 os.makedirs(salida_dir, exist_ok=True)
 
 
