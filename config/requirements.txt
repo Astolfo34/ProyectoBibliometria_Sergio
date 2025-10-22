@@ -3,7 +3,7 @@ selenium
 matplotlib
 numpy
 scipy
-sklearn
+scikit-learn
 networkx
 tqdm
 pandas
@@ -11,8 +11,9 @@ sentence_transformers
 Levenshtein
 requests
 geopandas
-mpl_toolkits
 pycountry
-dotenv
+python-dotenv
 bs4
 bibtexparser
+wordcloud
+pillow
