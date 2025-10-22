@@ -1,9 +1,3 @@
-"""
-Application.py
---------------
-Script principal para la automatización de scraping y guardado de artículos científicos en formato BibTeX.
-Descripción: Orquesta el flujo de scraping, desde el login, navegación, búsqueda y guardado de resultados.
-"""
 
 from selenium_scripts.selenium_setup import configurar_driver
 from selenium_scripts.navigation import login_portal_universidad, obtener_enlaces_bases, buscar_en_base, validar_con_google
@@ -72,7 +66,7 @@ def main():
 		driver.quit()
 		shutil.rmtree(temp_profile_dir, ignore_errors=True)
 
-# Call the function to check and set up the environment
+
 check_and_setup_env()
 
 if __name__ == "__main__":

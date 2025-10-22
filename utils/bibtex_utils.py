@@ -92,6 +92,19 @@ def crear_entrada_bibtex(entrada):
     if entrada.get("CitaBib"):
         bibtex += f"  note = {{Citation BibTeX: {entrada.get('CitaBib')}}},\n"
     
+    # Nuevos campos añadidos
+    if entrada.get("PaisAutor"):
+        pais_autor = entrada.get("PaisAutor").replace("{", "").replace("}", "")
+        bibtex += f"  author_country = {{{pais_autor}}},\n"
+    
+    if entrada.get("PaisPublicacion"):
+        pais_publicacion = entrada.get("PaisPublicacion").replace("{", "").replace("}", "")
+        bibtex += f"  publication_country = {{{pais_publicacion}}},\n"
+    
+    if entrada.get("NombreRevista"):
+        nombre_revista = entrada.get("NombreRevista").replace("{", "").replace("}", "")
+        bibtex += f"  journal_name = {{{nombre_revista}}},\n"
+    
     # Remover la última coma y cerrar la entrada
     bibtex = bibtex.rstrip(",\n") + "\n"
     bibtex += "}\n\n"
