@@ -1,4 +1,18 @@
+# Added libraries for compatibility
 selenium
-bs4
-dotenv
+matplotlib
+numpy
+scipy
+sklearn
+networkx
+tqdm
+pandas
+sentence_transformers
+Levenshtein
 requests
+geopandas
+mpl_toolkits
+pycountry
+dotenv
+bs4
+bibtexparser
