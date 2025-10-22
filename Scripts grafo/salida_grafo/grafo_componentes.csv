@@ -6,10 +6,11 @@ component_id,terms
 5,training data
 6,fine-tuning
 7,multimodality
-8,"explainability, transparency"
+8,transparency
 9,privacy
-10,human-ai interaction
-11,ai literacy
-12,co-creation
-13,personalization
-14,algorithmic bias
+10,explainability
+11,human-ai interaction
+12,ai literacy
+13,co-creation
+14,personalization
+15,algorithmic bias

@@ -1,14 +1,14 @@
 term,degree,weighted_degree
-transparency,1,1
-explainability,1,1
 machine learning,0,0
-ethics,0,0
-training data,0,0
 generative models,0,0
 prompting,0,0
-multimodality,0,0
+ethics,0,0
+training data,0,0
 fine-tuning,0,0
+multimodality,0,0
+transparency,0,0
 privacy,0,0
+explainability,0,0
 human-ai interaction,0,0
 ai literacy,0,0
 co-creation,0,0
