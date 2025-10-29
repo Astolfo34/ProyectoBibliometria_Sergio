@@ -67,6 +67,6 @@ ax.set_axis_off()
 plt.show()
 
 # Save the heatmap as an image
-output_path = os.path.join(os.path.dirname(file_path), 'heatmap_affiliations.png')
+output_path = os.path.join(os.path.dirname(file_path),'data_mapasCalor', 'heatmap_affiliations.png')
 fig.savefig(output_path, dpi=300, bbox_inches='tight')
 print(f"Heatmap saved as: {output_path}")

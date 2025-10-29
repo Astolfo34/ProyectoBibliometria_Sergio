@@ -8,6 +8,43 @@ import csv
 # Configuración de logging para depuración
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
+def _ruta_resolved_affiliations(ruta_relativa="requerimiento5/data/resolved_affiliations.csv"):
+    """Construye la ruta absoluta al CSV de afiliaciones resueltas."""
+    return os.path.join(
+        os.path.dirname(os.path.abspath(__file__)), "..", "..", ruta_relativa
+    )
+
+def _csv_resuelto_valido(ruta_relativa="requerimiento5/data/resolved_affiliations.csv"):
+    """
+    Verifica si existe un CSV de afiliaciones resueltas con contenido válido.
+    Criterios de validez:
+    - El archivo existe
+    - Tiene cabecera esperada: doi,autor,revista,apellido,pais (en cualquier orden, al menos estas 5)
+    - Tiene al menos una fila de datos
+    """
+    ruta = _ruta_resolved_affiliations(ruta_relativa)
+    if not os.path.exists(ruta):
+        return False
+    try:
+        if os.path.getsize(ruta) <= 0:
+            return False
+        with open(ruta, newline='', encoding='utf-8') as f:
+            reader = csv.DictReader(f)
+            headers = {h.strip().lower() for h in (reader.fieldnames or [])}
+            requeridos = {"doi", "autor", "revista", "apellido", "pais"}
+            if not requeridos.issubset(headers):
+                logging.warning(
+                    "El CSV existente no tiene todas las columnas requeridas: %s", ruta
+                )
+                return False
+            # Comprobar al menos una fila
+            for _ in reader:
+                return True
+            return False
+    except Exception as e:
+        logging.error(f"No se pudo validar el CSV existente en {ruta}: {e}")
+        return False
+
 def consultar_ror_por_afiliacion(afiliacion):
     """
     Consulta la ROR API para obtener la institución y el país asociado a una afiliación.
@@ -152,6 +189,17 @@ def procesar_dois_y_asignar_paises_estrategia(dois, clave_namsor):
     :param dois: Lista de DOIs.
     :param clave_namsor: Clave de API para NamSor.
     """
+    # Short-circuit: si ya existe un CSV válido, evitamos reprocesar y avisamos
+    ruta_csv = _ruta_resolved_affiliations()
+    if _csv_resuelto_valido():
+        mensaje = (
+            f"Ya existe un archivo de afiliaciones resueltas con contenido válido: {ruta_csv}. "
+            "Se omite el reprocesamiento para optimizar tiempo."
+        )
+        logging.info(mensaje)
+        print("[AVISO]", mensaje)
+        return
+
     afiliaciones = []
     resultados_autores = []
     apellidos_sin_afiliacion = set()

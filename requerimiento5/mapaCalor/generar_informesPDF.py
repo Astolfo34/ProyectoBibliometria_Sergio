@@ -90,6 +90,8 @@ def main() -> int:
 
 	# Rutas de entrada
 	heatmap_img = project_root / 'requerimiento5' / 'data' / 'heatmap_affiliations.png'
+	# Fallback: muchas ejecuciones guardan el heatmap en data/data_mapasCalor/
+	heatmap_img_alt = project_root / 'requerimiento5' / 'data' / 'data_mapasCalor' / 'heatmap_affiliations.png'
 	nube_dir = project_root / 'requerimiento5' / 'data' / 'data_nubePalabras'
 	linea_dir = project_root / 'requerimiento5' / 'data' / 'data_lineaTemporal'
 	csv_year = linea_dir / 'conteo_por_anio.csv'
@@ -98,7 +100,11 @@ def main() -> int:
 	# Detectar últimas imágenes disponibles
 	nube_img = find_latest_image(nube_dir)
 	linea_img = find_latest_image(linea_dir)
-	heatmap_found = heatmap_img if heatmap_img.exists() else None
+	heatmap_found = None
+	if heatmap_img.exists():
+		heatmap_found = heatmap_img
+	elif heatmap_img_alt.exists():
+		heatmap_found = heatmap_img_alt
 
 	logger.info(f"Heatmap: {'OK' if heatmap_found else 'NO ENCONTRADO'}")
 	logger.info(f"Nube de palabras: {nube_img if nube_img else 'NO ENCONTRADA'}")
