@@ -504,14 +504,25 @@ def main():
 	else:
 		cprint("No hay grafo cargado. Se omitirá el TOP de autores.", "warn")
 
-	# Pedir textos
+	# Pedir textos (validando que no estén vacíos)
 	cprint("\nIngresa los textos a comparar:", "info")
-	if console:
-		text1 = Prompt.ask("[bold]Texto 1[/bold]")
-		text2 = Prompt.ask("[bold]Texto 2[/bold]")
-	else:
-		text1 = input("Texto 1: ")
-		text2 = input("Texto 2: ")
+	def _ask_pair() -> tuple[str, str]:
+		if console:
+			t1 = Prompt.ask("[bold]Texto 1[/bold]")
+			t2 = Prompt.ask("[bold]Texto 2[/bold]")
+		else:
+			t1 = input("Texto 1: ")
+			t2 = input("Texto 2: ")
+		return (t1 or "").strip(), (t2 or "").strip()
+
+	text1, text2 = _ask_pair()
+	attempt = 0
+	while (not text1) or (not text2):
+		attempt += 1
+		cprint("Los textos no pueden estar vacíos. Inténtalo nuevamente.", "warn")
+		if attempt >= 2:
+			cprint("Sugerencia: pega títulos o resúmenes para obtener valores > 0.", "info")
+		text1, text2 = _ask_pair()
 
 	# Ejecutar algoritmos
 	cprint("\nEjecutando algoritmos de similitud...", "info")
@@ -519,18 +530,22 @@ def main():
 	resultados = ejecutar_algoritmos(text1, text2)
 	dt = time.time() - t0
 
-	# Mostrar resultados
+	# Mostrar resultados (ocultando campos de configuración auxiliares)
 	if console:
 		table_r = Table(show_header=True, header_style="bold green")
 		table_r.add_column("Algoritmo")
 		table_r.add_column("Score", justify="right")
 		for k, v in resultados.items():
+			if k == "char_ngram_n":
+				continue
 			score = "N/A" if v is None else f"{v:.4f}"
 			table_r.add_row(k, score)
 		console.print(Panel(table_r, title=f"Resultados (tiempo: {dt:.2f}s)", border_style="green"))
 	else:
 		print(f"Resultados (tiempo: {dt:.2f}s):")
 		for k, v in resultados.items():
+			if k == "char_ngram_n":
+				continue
 			print(f" - {k:15s}: {('N/A' if v is None else f'{v:.4f}')}" )
 
 	# Guardar CSV

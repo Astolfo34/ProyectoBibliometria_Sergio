@@ -7,13 +7,6 @@
   <key id="d1" for="node" attr.name="authors" attr.type="string" />
   <key id="d0" for="node" attr.name="title" attr.type="string" />
   <graph edgedefault="directed">
-    <node id="Tamborg2023">
-      <data key="d0">The Politics of Computational Thinking and Programming in Mathematics Education: Comparing Curricula and Resources in England, Sweden, and Denmark</data>
-      <data key="d1">Andreas Lindenskov Tamborg; Raimundo Elicer; ... Morten Misfeldt</data>
-      <data key="d2">2023</data>
-      <data key="d3" />
-      <data key="d4">https://link-springer-com.crai.referencistas.com/rwe/10.1007/978-3-030-95060-6_55-1</data>
-    </node>
     <node id="Tamborg2024">
       <data key="d0">The Politics of Computational Thinking and Programming in Mathematics Education: Comparing Curricula and Resources in England, Sweden, and Denmark</data>
       <data key="d1">Andreas Lindenskov Tamborg; Raimundo Elicer; ... Morten Misfeldt</data>
@@ -21,13 +14,20 @@
       <data key="d3" />
       <data key="d4">https://link-springer-com.crai.referencistas.com/rwe/10.1007/978-3-031-45667-1_55</data>
     </node>
+    <node id="Tamborg2023">
+      <data key="d0">The Politics of Computational Thinking and Programming in Mathematics Education: Comparing Curricula and Resources in England, Sweden, and Denmark</data>
+      <data key="d1">Andreas Lindenskov Tamborg; Raimundo Elicer; ... Morten Misfeldt</data>
+      <data key="d2">2023</data>
+      <data key="d3" />
+      <data key="d4">https://link-springer-com.crai.referencistas.com/rwe/10.1007/978-3-030-95060-6_55-1</data>
+    </node>
+    <edge source="Tamborg2024" target="Tamborg2023">
+      <data key="d5">1.0</data>
+    </edge>
     <edge source="Tamborg2023" target="Tamborg2023">
       <data key="d5">1.0</data>
     </edge>
     <edge source="Tamborg2023" target="Tamborg2024">
-      <data key="d5">1.0</data>
-    </edge>
-    <edge source="Tamborg2024" target="Tamborg2023">
       <data key="d5">1.0</data>
     </edge>
   </graph>

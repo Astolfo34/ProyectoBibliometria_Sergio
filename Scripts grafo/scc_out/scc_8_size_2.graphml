@@ -7,13 +7,6 @@
   <key id="d1" for="node" attr.name="authors" attr.type="string" />
   <key id="d0" for="node" attr.name="title" attr.type="string" />
   <graph edgedefault="directed">
-    <node id="Kaya2024">
-      <data key="d0">Computational Thinking Integration by Design-Based Learning Perspective Implementation Example of Math Education</data>
-      <data key="d1">Deniz Kaya; Yıldız Özaydın Aydoğdu</data>
-      <data key="d2">2024</data>
-      <data key="d3" />
-      <data key="d4">https://link-springer-com.crai.referencistas.com/chapter/10.1007/978-981-96-0853-9_9</data>
-    </node>
     <node id="Aydodu2024">
       <data key="d0">Computational Thinking Integration by Design-Based Learning Perspective Implementation Example of AI</data>
       <data key="d1">Şeyhmus Aydoğdu</data>
@@ -21,10 +14,17 @@
       <data key="d3" />
       <data key="d4">https://link-springer-com.crai.referencistas.com/chapter/10.1007/978-981-96-0853-9_5</data>
     </node>
-    <edge source="Kaya2024" target="Aydodu2024">
+    <node id="Kaya2024">
+      <data key="d0">Computational Thinking Integration by Design-Based Learning Perspective Implementation Example of Math Education</data>
+      <data key="d1">Deniz Kaya; Yıldız Özaydın Aydoğdu</data>
+      <data key="d2">2024</data>
+      <data key="d3" />
+      <data key="d4">https://link-springer-com.crai.referencistas.com/chapter/10.1007/978-981-96-0853-9_9</data>
+    </node>
+    <edge source="Aydodu2024" target="Kaya2024">
       <data key="d5">0.9144</data>
     </edge>
-    <edge source="Aydodu2024" target="Kaya2024">
+    <edge source="Kaya2024" target="Aydodu2024">
       <data key="d5">0.9144</data>
     </edge>
   </graph>
