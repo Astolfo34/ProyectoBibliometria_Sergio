@@ -1,17 +1,20 @@
 <?xml version='1.0' encoding='utf-8'?>
-<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd"><graph edgedefault="undirected"><node id="machine learning"/>
-<node id="generative models"/>
-<node id="prompting"/>
-<node id="ethics"/>
-<node id="training data"/>
-<node id="fine-tuning"/>
-<node id="multimodality"/>
-<node id="transparency"/>
-<node id="privacy"/>
-<node id="explainability"/>
-<node id="human-ai interaction"/>
-<node id="ai literacy"/>
-<node id="co-creation"/>
-<node id="personalization"/>
-<node id="algorithmic bias"/>
-</graph></graphml>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+  <graph edgedefault="undirected">
+    <node id="machine learning" />
+    <node id="generative models" />
+    <node id="prompting" />
+    <node id="ethics" />
+    <node id="training data" />
+    <node id="fine-tuning" />
+    <node id="multimodality" />
+    <node id="transparency" />
+    <node id="privacy" />
+    <node id="explainability" />
+    <node id="human-ai interaction" />
+    <node id="ai literacy" />
+    <node id="co-creation" />
+    <node id="personalization" />
+    <node id="algorithmic bias" />
+  </graph>
+</graphml>

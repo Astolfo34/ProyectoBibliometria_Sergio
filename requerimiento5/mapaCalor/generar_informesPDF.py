@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import os
+import re
+import json
 import logging
 from pathlib import Path
 from datetime import datetime
@@ -81,6 +83,80 @@ def add_table_pages_from_csv(pdf: PdfPages, csv_path: Path, title: str, max_rows
 		plt.figtext(0.5, 0.02, str(csv_path), ha='center', fontsize=8, alpha=0.6)
 		pdf.savefig(bbox_inches='tight')
 		plt.close()
+
+
+# === Utilidades de métricas de grafos (opcionales) ===
+def _metrics_from_adj_json(adj_path: Path) -> Optional[dict]:
+	"""Lee un adj.json (dict de dict) y calcula métricas simples de grafo dirigido."""
+	try:
+		if not adj_path.exists():
+			return None
+		with open(adj_path, 'r', encoding='utf-8') as f:
+			adj = json.load(f)
+		nodes = set(adj.keys())
+		edges = 0
+		out_deg = {}
+		in_deg = {}
+		for u, nbrs in adj.items():
+			k = len(nbrs)
+			edges += k
+			out_deg[u] = k
+			for v in nbrs.keys():
+				nodes.add(v)
+				in_deg[v] = in_deg.get(v, 0) + 1
+				out_deg.setdefault(v, 0)
+		n = len(nodes)
+		m = edges
+		# Top-5 por out-degree
+		top5_out = sorted(out_deg.items(), key=lambda x: x[1], reverse=True)[:5]
+		# Top-5 por in-degree
+		top5_in = sorted(in_deg.items(), key=lambda x: x[1], reverse=True)[:5]
+		density = None
+		try:
+			if n > 1:
+				density = m / (n * (n - 1))
+		except Exception:
+			pass
+		return {
+			'n': n,
+			'm': m,
+			'density': density,
+			'top5_out': top5_out,
+			'top5_in': top5_in,
+		}
+	except Exception:
+		return None
+
+
+def _metrics_from_graphml(graphml_path: Path, undirected: bool = True) -> Optional[dict]:
+	"""Lee un GraphML y calcula métricas básicas; si undirected=True lo trata como no dirigido."""
+	try:
+		import networkx as nx  # opcional
+		if not graphml_path.exists():
+			return None
+		G = nx.read_graphml(str(graphml_path))
+		if undirected and not isinstance(G, nx.Graph):
+			G = nx.Graph(G)
+		if not undirected and not isinstance(G, nx.DiGraph):
+			G = nx.DiGraph(G)
+		n = G.number_of_nodes()
+		m = G.number_of_edges()
+		density = None
+		try:
+			density = nx.density(G)
+		except Exception:
+			pass
+		# Top-5 por grado
+		degs = G.degree()
+		top5 = sorted(degs, key=lambda x: x[1], reverse=True)[:5]
+		return {
+			'n': n,
+			'm': m,
+			'density': density,
+			'top5_degree': [(str(n), int(d)) for n, d in top5],
+		}
+	except Exception:
+		return None
 
 
 def main() -> int:
@@ -176,6 +252,117 @@ def main() -> int:
 		# Añadir tablas CSV
 		add_table_pages_from_csv(pdf, csv_year, title="Conteo de publicaciones por año")
 		add_table_pages_from_csv(pdf, csv_year_j, title="Conteo de publicaciones por año y revista")
+
+		# === Sección opcional: Resultados de grafos ===
+		try:
+			grafos_dir = project_root / 'Scripts grafo'
+			salida_grafo = grafos_dir / 'salida_grafo'
+			scc_out = grafos_dir / 'scc_out'
+
+			# Imágenes principales (si existen)
+			citations_img = salida_grafo / 'grafo.png'
+			cooc_img = salida_grafo / 'grafo_coocurrencia.png'
+
+			if citations_img.exists():
+				add_image_page(
+					pdf,
+					citations_img,
+					title="Grafo de citaciones (dirigido)",
+					caption="Grafo dirigido generado a partir del archivo unificado. Layout fuerza de resortes; la densidad y los hubs pueden sugerir áreas con alta interconexión de citas.",
+				)
+
+			if cooc_img.exists():
+				add_image_page(
+					pdf,
+					cooc_img,
+					title="Grafo de coocurrencia de términos",
+					caption="Relaciones entre términos frecuentes que aparecen en el mismo abstract. Los enlaces reflejan coocurrencias y la agrupación sugiere tópicos cercanos.",
+				)
+
+			# Imágenes de SCC (tomar algunas)
+			if scc_out.exists():
+				scc_imgs = sorted(
+					[s for s in scc_out.glob('scc_*_size_*.png') if s.is_file()],
+					key=lambda p: (
+						-int(re.search(r"_size_(\d+)\.png$", p.name).group(1)) if re.search(r"_size_(\d+)\.png$", p.name) else 0,
+						-p.stat().st_mtime
+					),
+				)
+				for img in scc_imgs[:3]:  # incluir las 3 mayores si existen
+					size_match = re.search(r"_size_(\d+)\.png$", img.name)
+					size_txt = size_match.group(1) if size_match else "?"
+					add_image_page(
+						pdf,
+						img,
+						title=f"Subgrafo SCC (tamaño {size_txt})",
+						caption="Una SCC (componente fuertemente conexa) indica un grupo de artículos con citación mutuamente alcanzable; tamaños mayores pueden señalar clústeres temáticos consolidados.",
+					)
+
+			# Tablas de SCC (opcional)
+			scc_summary_csv = scc_out / 'scc_summary.csv'
+			if scc_summary_csv.exists():
+				add_table_pages_from_csv(pdf, scc_summary_csv, title="Resumen de tamaños de SCC")
+
+			# Conclusiones (opcional, a partir de scc_summary.json si existe)
+			scc_summary_json = scc_out / 'scc_summary.json'
+			bullets: List[str] = []
+			if scc_summary_json.exists():
+				try:
+					with open(scc_summary_json, 'r', encoding='utf-8') as f:
+						info = json.load(f)
+						total = info.get('total_components')
+						sizes = info.get('components_sorted_sizes') or []
+						mayor = max(sizes) if sizes else None
+						if total is not None:
+							bullets.append(f"Se detectaron {total} componentes fuertemente conexas (SCC).")
+						if mayor is not None:
+							bullets.append(f"La SCC más grande tiene tamaño {mayor}, lo que sugiere un clúster central de citaciones.")
+						if sizes:
+							bullets.append("La distribución de tamaños decae rápidamente: muchas SCC pequeñas y pocas grandes (estructura típica en grafos de citación).")
+				except Exception:
+					pass
+
+			# Métricas cuantitativas (opcionales) de grafos
+			# 1) Citaciones: derivar desde adj.json si está presente (no lo sobreescribe coocurrencia)
+			cit_adj = salida_grafo / 'grafo_adj.json'
+			cit_metrics = _metrics_from_adj_json(cit_adj)
+			if cit_metrics:
+				bullets.append(
+					f"Citaciones: nodos={cit_metrics['n']}, aristas={cit_metrics['m']}, "
+					+ (f"densidad={cit_metrics['density']:.4f}" if cit_metrics['density'] is not None else "densidad=N/A")
+				)
+				if cit_metrics['top5_in']:
+					names = ", ".join([f"{n}({d})" for n, d in cit_metrics['top5_in']])
+					bullets.append(f"Top-5 por in-degree (citados): {names}")
+				if cit_metrics['top5_out']:
+					names = ", ".join([f"{n}({d})" for n, d in cit_metrics['top5_out']])
+					bullets.append(f"Top-5 por out-degree (citantes): {names}")
+
+			# 2) Coocurrencia: leer el GraphML actual (tras orquestador suele corresponder a coocurrencia)
+			cooc_metrics = _metrics_from_graphml(salida_grafo / 'grafo.graphml', undirected=True)
+			if cooc_metrics:
+				bullets.append(
+					f"Coocurrencia: nodos={cooc_metrics['n']}, aristas={cooc_metrics['m']}, "
+					+ (f"densidad={cooc_metrics['density']:.4f}" if cooc_metrics['density'] is not None else "densidad=N/A")
+				)
+				if cooc_metrics['top5_degree']:
+					names = ", ".join([f"{n}({d})" for n, d in cooc_metrics['top5_degree']])
+					bullets.append(f"Top-5 términos por grado: {names}")
+
+			if citations_img.exists():
+				bullets.append("El grafo de citaciones revela nodos con alta conectividad que podrían ser trabajos seminales o de revisión.")
+			if cooc_img.exists():
+				bullets.append("El grafo de coocurrencia sugiere agrupaciones de términos que apuntan a subtemas recurrentes.")
+
+			if bullets:
+				add_cover_page(
+					pdf,
+					title="Conclusiones sobre grafos (síntesis)",
+					subtitle="Resumen interpretativo a partir de los artefactos de grafos disponibles",
+					bullets=bullets,
+				)
+		except Exception as e:
+			logger.warning(f"Sección de grafos omitida por error no crítico: {e}")
 
 		# Página final con conclusiones genéricas
 		add_cover_page(

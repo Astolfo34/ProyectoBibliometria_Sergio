@@ -1,47 +1,50 @@
 <?xml version='1.0' encoding='utf-8'?>
-<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd"><key id="d5" for="edge" attr.name="weight" attr.type="double"/>
-<key id="d4" for="node" attr.name="url" attr.type="string"/>
-<key id="d3" for="node" attr.name="doi" attr.type="string"/>
-<key id="d2" for="node" attr.name="year" attr.type="string"/>
-<key id="d1" for="node" attr.name="authors" attr.type="string"/>
-<key id="d0" for="node" attr.name="title" attr.type="string"/>
-<graph edgedefault="directed"><node id="Ferragina2024">
-  <data key="d0">Computational Thinking</data>
-  <data key="d1">Paolo Ferragina; Fabrizio Luccio</data>
-  <data key="d2">2024</data>
-  <data key="d3"></data>
-  <data key="d4">https://link-springer-com.crai.referencistas.com/book/10.1007/978-3-031-59922-4</data>
-</node>
-<node id="Suri2022">
-  <data key="d0">Computational Thinking</data>
-  <data key="d1">Abhinav Suri</data>
-  <data key="d2">2022</data>
-  <data key="d3"></data>
-  <data key="d4">https://link-springer-com.crai.referencistas.com/chapter/10.1007/978-1-4842-7780-5_2</data>
-</node>
-<node id="Srinivasa2022">
-  <data key="d0">Computational Thinking</data>
-  <data key="d1">K. G. Srinivasa; Muralidhar Kurni; Kuppala Saritha</data>
-  <data key="d2">2022</data>
-  <data key="d3"></data>
-  <data key="d4">https://link-springer-com.crai.referencistas.com/chapter/10.1007/978-981-19-6734-4_6</data>
-</node>
-<edge source="Ferragina2024" target="Srinivasa2022">
-  <data key="d5">0.7</data>
-</edge>
-<edge source="Ferragina2024" target="Suri2022">
-  <data key="d5">0.7</data>
-</edge>
-<edge source="Suri2022" target="Ferragina2024">
-  <data key="d5">0.7</data>
-</edge>
-<edge source="Suri2022" target="Srinivasa2022">
-  <data key="d5">0.7</data>
-</edge>
-<edge source="Srinivasa2022" target="Ferragina2024">
-  <data key="d5">0.7</data>
-</edge>
-<edge source="Srinivasa2022" target="Suri2022">
-  <data key="d5">0.7</data>
-</edge>
-</graph></graphml>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+  <key id="d5" for="edge" attr.name="weight" attr.type="double" />
+  <key id="d4" for="node" attr.name="url" attr.type="string" />
+  <key id="d3" for="node" attr.name="doi" attr.type="string" />
+  <key id="d2" for="node" attr.name="year" attr.type="string" />
+  <key id="d1" for="node" attr.name="authors" attr.type="string" />
+  <key id="d0" for="node" attr.name="title" attr.type="string" />
+  <graph edgedefault="directed">
+    <node id="Srinivasa2022">
+      <data key="d0">Computational Thinking</data>
+      <data key="d1">K. G. Srinivasa; Muralidhar Kurni; Kuppala Saritha</data>
+      <data key="d2">2022</data>
+      <data key="d3" />
+      <data key="d4">https://link-springer-com.crai.referencistas.com/chapter/10.1007/978-981-19-6734-4_6</data>
+    </node>
+    <node id="Suri2022">
+      <data key="d0">Computational Thinking</data>
+      <data key="d1">Abhinav Suri</data>
+      <data key="d2">2022</data>
+      <data key="d3" />
+      <data key="d4">https://link-springer-com.crai.referencistas.com/chapter/10.1007/978-1-4842-7780-5_2</data>
+    </node>
+    <node id="Ferragina2024">
+      <data key="d0">Computational Thinking</data>
+      <data key="d1">Paolo Ferragina; Fabrizio Luccio</data>
+      <data key="d2">2024</data>
+      <data key="d3" />
+      <data key="d4">https://link-springer-com.crai.referencistas.com/book/10.1007/978-3-031-59922-4</data>
+    </node>
+    <edge source="Srinivasa2022" target="Ferragina2024">
+      <data key="d5">0.7</data>
+    </edge>
+    <edge source="Srinivasa2022" target="Suri2022">
+      <data key="d5">0.7</data>
+    </edge>
+    <edge source="Suri2022" target="Ferragina2024">
+      <data key="d5">0.7</data>
+    </edge>
+    <edge source="Suri2022" target="Srinivasa2022">
+      <data key="d5">0.7</data>
+    </edge>
+    <edge source="Ferragina2024" target="Srinivasa2022">
+      <data key="d5">0.7</data>
+    </edge>
+    <edge source="Ferragina2024" target="Suri2022">
+      <data key="d5">0.7</data>
+    </edge>
+  </graph>
+</graphml>
