@@ -7,13 +7,6 @@
   <key id="d1" for="node" attr.name="authors" attr.type="string" />
   <key id="d0" for="node" attr.name="title" attr.type="string" />
   <graph edgedefault="directed">
-    <node id="Carnahan2025">
-      <data key="d0">Artificial Intelligence Fundamentals</data>
-      <data key="d1">David Carnahan</data>
-      <data key="d2">2025</data>
-      <data key="d3" />
-      <data key="d4">https://link-springer-com.crai.referencistas.com/chapter/10.1007/978-3-031-83526-1_4</data>
-    </node>
     <node id="Solanki2024">
       <data key="d0">Generative Artificial Intelligence</data>
       <data key="d1">Shivam R Solanki; Drupad K Khublani</data>
@@ -21,12 +14,12 @@
       <data key="d3" />
       <data key="d4">https://link-springer-com.crai.referencistas.com/book/10.1007/979-8-8688-0403-8</data>
     </node>
-    <node id="Kova2024">
-      <data key="d0">Introduction to the Generative Artificial Intelligence Systems</data>
-      <data key="d1">Mitja Kovač</data>
-      <data key="d2">2024</data>
+    <node id="Carnahan2025">
+      <data key="d0">Artificial Intelligence Fundamentals</data>
+      <data key="d1">David Carnahan</data>
+      <data key="d2">2025</data>
       <data key="d3" />
-      <data key="d4">https://link-springer-com.crai.referencistas.com/chapter/10.1007/978-3-031-65514-2_4</data>
+      <data key="d4">https://link-springer-com.crai.referencistas.com/chapter/10.1007/978-3-031-83526-1_4</data>
     </node>
     <node id="Banh2023">
       <data key="d0">Generative artificial intelligence</data>
@@ -35,6 +28,22 @@
       <data key="d3">10.1007/s12525-023-00680-1</data>
       <data key="d4">https://link-springer-com.crai.referencistas.com/article/10.1007/s12525-023-00680-1</data>
     </node>
+    <node id="Kova2024">
+      <data key="d0">Introduction to the Generative Artificial Intelligence Systems</data>
+      <data key="d1">Mitja Kovač</data>
+      <data key="d2">2024</data>
+      <data key="d3" />
+      <data key="d4">https://link-springer-com.crai.referencistas.com/chapter/10.1007/978-3-031-65514-2_4</data>
+    </node>
+    <edge source="Solanki2024" target="Banh2023">
+      <data key="d5">0.7</data>
+    </edge>
+    <edge source="Solanki2024" target="Carnahan2025">
+      <data key="d5">0.7</data>
+    </edge>
+    <edge source="Solanki2024" target="Kova2024">
+      <data key="d5">0.7</data>
+    </edge>
     <edge source="Carnahan2025" target="Banh2023">
       <data key="d5">0.7</data>
     </edge>
@@ -47,13 +56,13 @@
     <edge source="Carnahan2025" target="Carnahan2025">
       <data key="d5">1.0</data>
     </edge>
-    <edge source="Solanki2024" target="Banh2023">
+    <edge source="Banh2023" target="Carnahan2025">
       <data key="d5">0.7</data>
     </edge>
-    <edge source="Solanki2024" target="Carnahan2025">
+    <edge source="Banh2023" target="Solanki2024">
       <data key="d5">0.7</data>
     </edge>
-    <edge source="Solanki2024" target="Kova2024">
+    <edge source="Banh2023" target="Kova2024">
       <data key="d5">0.7</data>
     </edge>
     <edge source="Kova2024" target="Banh2023">
@@ -63,15 +72,6 @@
       <data key="d5">0.7</data>
     </edge>
     <edge source="Kova2024" target="Solanki2024">
-      <data key="d5">0.7</data>
-    </edge>
-    <edge source="Banh2023" target="Carnahan2025">
-      <data key="d5">0.7</data>
-    </edge>
-    <edge source="Banh2023" target="Solanki2024">
-      <data key="d5">0.7</data>
-    </edge>
-    <edge source="Banh2023" target="Kova2024">
       <data key="d5">0.7</data>
     </edge>
   </graph>

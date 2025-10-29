@@ -6,6 +6,7 @@ import glob
 import time
 import threading
 from pathlib import Path
+from getpass import getpass
 # Nota: Evitamos importar bibliotecas externas a nivel de módulo para no fallar
 # antes de configurar/instalar el entorno. Se importan de forma diferida.
 
@@ -76,6 +77,61 @@ URL_BIBLIOTECA = "https://library.uniquindio.edu.co/databases"  # Mantener la UR
 NOMBRES_BASES = ["Springer", "ScienceDirect", "IEEE"]
 TERMINOS_BUSQUEDA = ["generative artificial intelligence","Computational Thinking", "AI in Education"]
 CARPETA_DATA = "data"
+
+def _show_intro_messages():
+	"""Muestra los mensajes solicitados al iniciar la aplicación usando estilos de consola."""
+	bienvenidos = (
+		"Binvenidos: Este es el proyecto de bibliometria de analisis de algoritmos con la base de datos de la Universidad del Quindio. "
+		"Tenga en cuenta usar el correo con el cual tiene acceso a la biblioteca crai de la Universidad. "
+		"Los articulos seran extraidos considerando las busquedas (\"generative artificial intelligence\",\"Computational Thinking\", \"AI in Education\"), "
+		"y seran extraidos de las bases de datos (\"Springer\", \"ScienceDirect\", \"IEEE\") para su analisi."
+	)
+	sugerencia = (
+		"Sugerencia: este metodo es unicamente regulado por su usuario, tome en cuenta que el proceso de escapeo es demorado si es la primera vez que lo ejecuta, "
+		"al rededor de 40-60 mins. De haber datos ya extaridos , el sistema continuara con los demas requerimientos."
+	)
+	advertencia = (
+		"Advertencia: Sus credenciales seran tomadas por cada ejecucion y no serna almacenadas en los repositorios del proyecto, "
+		"ya que seran tomadas como variables de entorno. si el Programa falla en este paso considere que sus credenciales sean correctas."
+	)
+
+	_panel("Bienvenida", bienvenidos, style="title")
+	_panel("Sugerencia", sugerencia, style="warn")
+	_panel("Advertencia", advertencia, style="err")
+
+
+def _ensure_env_with_credentials():
+	"""Solicita credenciales por terminal y crea/actualiza el archivo .env en el root del repo.
+
+	No modifica la forma en que otros módulos leen las variables; únicamente garantiza que
+	exista el archivo .env con EMAIL y PASSWORD actualizados.
+	"""
+	repo_root = Path(__file__).resolve().parent
+	env_path = repo_root / ".env"
+
+	# Pedir credenciales por terminal (ocultar contraseña)
+	if RICH_OK and console:
+		email = Prompt.ask("Ingrese su correo institucional (biblioteca CRAI)")
+		cprint("Ingrese su contraseña (no se mostrará al escribir):", "muted")
+		password = getpass("")
+	else:
+		email = input("Ingrese su correo institucional (biblioteca CRAI): ")
+		password = getpass("Ingrese su contraseña: ")
+
+	# Construir contenido del .env según referencia del proyecto
+	content_lines = [
+		"# Archivo de variables sensibles para el proyecto",
+		f"EMAIL={email}",
+		f"PASSWORD={password}",
+		"",
+	]
+	try:
+		with open(env_path, "w", encoding="utf-8") as f:
+			f.write("\n".join(content_lines))
+		_panel("Credenciales", f"Se guardaron/actualizaron las credenciales en '{env_path.name}'.", style="ok")
+	except Exception as e:
+		_panel("Error", f"No fue posible escribir el archivo .env: {e}", style="err")
+		raise
 
 def check_and_setup_env():
 	"""Garantiza un entorno funcional y dependencias instaladas.
@@ -281,6 +337,10 @@ def main():
 	cprint("╚════════════════════════════════════════════════════════════╝\n", "title")
 
 	check_and_setup_env()
+
+	# Mostrar mensajes y solicitar credenciales al inicio (sin cambiar cómo otros módulos las leen)
+	_show_intro_messages()
+	_ensure_env_with_credentials()
 
 	if hay_bibtex_validos(CARPETA_DATA):
 		_panel("Optimización", "Se detectaron archivos BibTeX válidos en 'data/'. Se omite el scraping.", style="warn")

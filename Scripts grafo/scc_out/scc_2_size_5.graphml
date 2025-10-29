@@ -7,26 +7,12 @@
   <key id="d1" for="node" attr.name="authors" attr.type="string" />
   <key id="d0" for="node" attr.name="title" attr.type="string" />
   <graph edgedefault="directed">
-    <node id="Gupta2025">
-      <data key="d0">Introduction to Artificial Intelligence</data>
-      <data key="d1">Rajan Gupta; Sanju Tiwari; Poonam Chaudhary</data>
+    <node id="Sanmugam2025">
+      <data key="d0">Introduction to Artificial Intelligence in Education</data>
+      <data key="d1">Mageswaran Sanmugam; Khairulnisak Mohamad Zaini; Darren Lim Yie</data>
       <data key="d2">2025</data>
       <data key="d3" />
-      <data key="d4">https://link-springer-com.crai.referencistas.com/chapter/10.1007/978-3-031-82062-5_1</data>
-    </node>
-    <node id="Papajorgji2025">
-      <data key="d0">Introduction to Artificial Intelligence</data>
-      <data key="d1">Petraq Papajorgji; Howard Moskowitz</data>
-      <data key="d2">2025</data>
-      <data key="d3" />
-      <data key="d4">https://link-springer-com.crai.referencistas.com/chapter/10.1007/978-3-031-78078-3_5</data>
-    </node>
-    <node id="Mutambara2025">
-      <data key="d0">Introduction to Artificial Intelligence (AI)</data>
-      <data key="d1">Prof. Dr. Eng. Mutambara</data>
-      <data key="d2">2025</data>
-      <data key="d3" />
-      <data key="d4">https://link-springer-com.crai.referencistas.com/chapter/10.1007/978-3-031-88423-8_4</data>
+      <data key="d4">https://link-springer-com.crai.referencistas.com/chapter/10.1007/978-3-031-56848-0_1</data>
     </node>
     <node id="Cheng2025">
       <data key="d0">Introduction to Artificial Intelligence</data>
@@ -35,23 +21,46 @@
       <data key="d3" />
       <data key="d4">https://link-springer-com.crai.referencistas.com/chapter/10.1007/978-981-96-1235-2_3</data>
     </node>
-    <node id="Sanmugam2025">
-      <data key="d0">Introduction to Artificial Intelligence in Education</data>
-      <data key="d1">Mageswaran Sanmugam; Khairulnisak Mohamad Zaini; Darren Lim Yie</data>
+    <node id="Papajorgji2025">
+      <data key="d0">Introduction to Artificial Intelligence</data>
+      <data key="d1">Petraq Papajorgji; Howard Moskowitz</data>
       <data key="d2">2025</data>
       <data key="d3" />
-      <data key="d4">https://link-springer-com.crai.referencistas.com/chapter/10.1007/978-3-031-56848-0_1</data>
+      <data key="d4">https://link-springer-com.crai.referencistas.com/chapter/10.1007/978-3-031-78078-3_5</data>
     </node>
-    <edge source="Gupta2025" target="Sanmugam2025">
+    <node id="Gupta2025">
+      <data key="d0">Introduction to Artificial Intelligence</data>
+      <data key="d1">Rajan Gupta; Sanju Tiwari; Poonam Chaudhary</data>
+      <data key="d2">2025</data>
+      <data key="d3" />
+      <data key="d4">https://link-springer-com.crai.referencistas.com/chapter/10.1007/978-3-031-82062-5_1</data>
+    </node>
+    <node id="Mutambara2025">
+      <data key="d0">Introduction to Artificial Intelligence (AI)</data>
+      <data key="d1">Prof. Dr. Eng. Mutambara</data>
+      <data key="d2">2025</data>
+      <data key="d3" />
+      <data key="d4">https://link-springer-com.crai.referencistas.com/chapter/10.1007/978-3-031-88423-8_4</data>
+    </node>
+    <edge source="Sanmugam2025" target="Gupta2025">
       <data key="d5">0.6231</data>
     </edge>
-    <edge source="Gupta2025" target="Cheng2025">
+    <edge source="Sanmugam2025" target="Cheng2025">
+      <data key="d5">0.6231</data>
+    </edge>
+    <edge source="Sanmugam2025" target="Papajorgji2025">
+      <data key="d5">0.6231</data>
+    </edge>
+    <edge source="Cheng2025" target="Sanmugam2025">
+      <data key="d5">0.6231</data>
+    </edge>
+    <edge source="Cheng2025" target="Gupta2025">
       <data key="d5">0.7</data>
     </edge>
-    <edge source="Gupta2025" target="Papajorgji2025">
+    <edge source="Cheng2025" target="Papajorgji2025">
       <data key="d5">0.7</data>
     </edge>
-    <edge source="Gupta2025" target="Mutambara2025">
+    <edge source="Cheng2025" target="Mutambara2025">
       <data key="d5">0.6353</data>
     </edge>
     <edge source="Papajorgji2025" target="Sanmugam2025">
@@ -69,6 +78,18 @@
     <edge source="Papajorgji2025" target="Mutambara2025">
       <data key="d5">0.6353</data>
     </edge>
+    <edge source="Gupta2025" target="Sanmugam2025">
+      <data key="d5">0.6231</data>
+    </edge>
+    <edge source="Gupta2025" target="Cheng2025">
+      <data key="d5">0.7</data>
+    </edge>
+    <edge source="Gupta2025" target="Papajorgji2025">
+      <data key="d5">0.7</data>
+    </edge>
+    <edge source="Gupta2025" target="Mutambara2025">
+      <data key="d5">0.6353</data>
+    </edge>
     <edge source="Mutambara2025" target="Gupta2025">
       <data key="d5">0.6353</data>
     </edge>
@@ -80,27 +101,6 @@
     </edge>
     <edge source="Mutambara2025" target="Mutambara2025">
       <data key="d5">1.0</data>
-    </edge>
-    <edge source="Cheng2025" target="Sanmugam2025">
-      <data key="d5">0.6231</data>
-    </edge>
-    <edge source="Cheng2025" target="Gupta2025">
-      <data key="d5">0.7</data>
-    </edge>
-    <edge source="Cheng2025" target="Papajorgji2025">
-      <data key="d5">0.7</data>
-    </edge>
-    <edge source="Cheng2025" target="Mutambara2025">
-      <data key="d5">0.6353</data>
-    </edge>
-    <edge source="Sanmugam2025" target="Gupta2025">
-      <data key="d5">0.6231</data>
-    </edge>
-    <edge source="Sanmugam2025" target="Cheng2025">
-      <data key="d5">0.6231</data>
-    </edge>
-    <edge source="Sanmugam2025" target="Papajorgji2025">
-      <data key="d5">0.6231</data>
     </edge>
   </graph>
 </graphml>
