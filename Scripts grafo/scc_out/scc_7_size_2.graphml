@@ -7,13 +7,6 @@
   <key id="d1" for="node" attr.name="authors" attr.type="string" />
   <key id="d0" for="node" attr.name="title" attr.type="string" />
   <graph edgedefault="directed">
-    <node id="Broley2023">
-      <data key="d0">Computational Thinking and Mathematics</data>
-      <data key="d1">Laura Broley; Chantal Buteau; ... Max Stephens</data>
-      <data key="d2">2023</data>
-      <data key="d3" />
-      <data key="d4">https://link-springer-com.crai.referencistas.com/rwe/10.1007/978-3-030-95060-6_12-1</data>
-    </node>
     <node id="Broley2024">
       <data key="d0">Computational Thinking and Mathematics</data>
       <data key="d1">Laura Broley; Chantal Buteau; ... Max Stephens</data>
@@ -21,10 +14,17 @@
       <data key="d3" />
       <data key="d4">https://link-springer-com.crai.referencistas.com/rwe/10.1007/978-3-031-45667-1_12</data>
     </node>
-    <edge source="Broley2023" target="Broley2024">
+    <node id="Broley2023">
+      <data key="d0">Computational Thinking and Mathematics</data>
+      <data key="d1">Laura Broley; Chantal Buteau; ... Max Stephens</data>
+      <data key="d2">2023</data>
+      <data key="d3" />
+      <data key="d4">https://link-springer-com.crai.referencistas.com/rwe/10.1007/978-3-030-95060-6_12-1</data>
+    </node>
+    <edge source="Broley2024" target="Broley2023">
       <data key="d5">1.0</data>
     </edge>
-    <edge source="Broley2024" target="Broley2023">
+    <edge source="Broley2023" target="Broley2024">
       <data key="d5">1.0</data>
     </edge>
   </graph>

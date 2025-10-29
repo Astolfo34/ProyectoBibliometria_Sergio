@@ -284,13 +284,13 @@ year,journal,count
 2023,Electromechanobiology of Cartilage and Osteoarthritis,1
 2023,Higher Education Computer Science,1
 2023,International Journal of Precision Engineering and Manufacturing,1
-2023,npj Digital Medicine,1
-2023,Multimedia Tools and Applications,1
-2023,Nature Reviews Bioengineering,1
 2023,"Digital Technologies and Transformation in Business, Industry and Organizations",1
 2023,Responsive and Sustainable Educational Futures,1
 2023,Information Management and Big Data,1
 2023,Visualization of Time-Oriented Data,1
+2023,npj Digital Medicine,1
+2023,Multimedia Tools and Applications,1
+2023,Nature Reviews Bioengineering,1
 2024,Education and Information Technologies,133
 2024,unknown,35
 2024,AI & SOCIETY,35
@@ -604,9 +604,9 @@ year,journal,count
 2024,Digital Society,2
 2024,Advances in Gerontology,2
 2024,Communications in Computer and Information Science,2
+2024,Educational Studies in Mathematics,2
 2024,International Journal on Interactive Design and Manufacturing (IJIDeM),2
 2024,"Scenarios, Fictions, and Imagined Possibilities in Science, Engineering, and Education",2
-2024,Educational Studies in Mathematics,2
 2024,npj Health Systems,1
 2024,Informatik Spektrum,1
 2024,International Journal of Intelligent Robotics and Applications,1
@@ -668,6 +668,10 @@ year,journal,count
 2024,Current Gastroenterology Reports,1
 2024,Molecular Diversity,1
 2024,Challenges of the Technological Mind,1
+2024,Systems Thinking for Sustainability Education in Business Schools,1
+2024,Advances in Computational Mathematics,1
+2024,Drug Discovery and Evaluation: Safety and Pharmacokinetic Assays,1
+2024,BMC Complementary Medicine and Therapies,1
 2024,Nature Communications,1
 2024,Journal of International Entrepreneurship,1
 2024,ATZelectronics worldwide,1
@@ -700,10 +704,6 @@ year,journal,count
 2024,Journal of Translational Medicine,1
 2024,From Emerging Technologies to Business Opportunities,1
 2024,Understanding Artificial Intelligence,1
-2024,Systems Thinking for Sustainability Education in Business Schools,1
-2024,Advances in Computational Mathematics,1
-2024,Drug Discovery and Evaluation: Safety and Pharmacokinetic Assays,1
-2024,BMC Complementary Medicine and Therapies,1
 2025,Education and Information Technologies,162
 2025,Scientific Reports,74
 2025,AI & SOCIETY,57
@@ -1187,14 +1187,14 @@ year,journal,count
 2025,Informatik Spektrum,2
 2025,Journal of Translational Medicine,2
 2025,Nature Biomedical Engineering,2
+2025,Formal Methods in Architecture,2
+2025,"Critical Thinking Across Disciplines, Vol. 2",2
 2025,The Palgrave Encyclopedia of Disability,2
 2025,Artificial Intelligence-Aided Design for Sustainability,2
 2025,IoT and Big Data Technologies for Health Care,2
 2025,Nutrire,2
-2025,"Critical Thinking Across Disciplines, Vol. 2",2
 2025,Theory and Society,2
 2025,Communications Earth & Environment,2
-2025,Formal Methods in Architecture,2
 2025,Bratislava Medical Journal,1
 2025,Communications Medicine,1
 2025,Journal of Religion and Health,1
@@ -1317,6 +1317,14 @@ year,journal,count
 2025,Clinical Rheumatology,1
 2025,Advanced Topics in Electric Circuits,1
 2025,Artificial Intelligence for Oral Health Care,1
+2025,Asian-Pacific Journal of Second and Foreign Language Education,1
+2025,Systems Engineering & Management,1
+2025,"Cognition, Technology & Work",1
+2025,International Journal of Computational Intelligence Systems,1
+2025,Adaptive Instructional Systems,1
+2025,Journal of Fluorescence,1
+2025,E-Learning and Enhancing Soft Skills,1
+2025,Cognitive Therapy and Research,1
 2025,Nature Reviews Rheumatology,1
 2025,Progress in Artificial Intelligence,1
 2025,Smart Solutions for a Sustainable Future,1
@@ -1354,14 +1362,6 @@ year,journal,count
 2025,AMS Review,1
 2025,JMST Advances,1
 2025,"Service Oriented, Holonic and Multi-agent Manufacturing Systems for Industry of the Future",1
-2025,Asian-Pacific Journal of Second and Foreign Language Education,1
-2025,Systems Engineering & Management,1
-2025,"Cognition, Technology & Work",1
-2025,International Journal of Computational Intelligence Systems,1
-2025,Adaptive Instructional Systems,1
-2025,Journal of Fluorescence,1
-2025,E-Learning and Enhancing Soft Skills,1
-2025,Cognitive Therapy and Research,1
 2026,Two Decades of TEL. From Lessons Learnt to Challenges Ahead,14
 2026,Innovative Technologies and Learning,10
 2026,Ethical and Social Impacts of Information and Communication Technology,9
@@ -1393,11 +1393,11 @@ year,journal,count
 2026,Cloud Computing,1
 2026,Flexible Query Answering Systems,1
 2026,Manufacturing 2030 - A Perspective to Future Challenges in Industrial Production,1
+2026,Digital Transformation in Education and Artificial Intelligence Application,1
+2026,Software Engineering: Emerging Trends and Practices in System Development,1
 2026,"Exploring Education Policy in a Globalized World: Concepts, Contexts, and Practices",1
 2026,Digital Interaction and Machine Intelligence,1
 2026,Progress in Artificial Intelligence,1
 2026,"Connected Objects, Artificial Intelligence, Telecommunications and Electronics Engineering",1
 2026,Electronic Participation,1
-2026,Digital Transformation in Education and Artificial Intelligence Application,1
-2026,Software Engineering: Emerging Trends and Practices in System Development,1
 2027,unknown,1

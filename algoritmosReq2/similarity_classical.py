@@ -63,3 +63,49 @@ def dice_similarity(texto1, texto2):
     if not t1 or not t2:
         return 0.0
     return 2 * len(t1.intersection(t2)) / (len(t1) + len(t2))
+
+# ------------------------------------------------------
+#  4. Jaccard y Dice con n-gramas de CARACTERES
+# ------------------------------------------------------
+def _char_ngrams(s: str, n: int) -> set[str]:
+    if not s:
+        return set()
+    n = max(1, int(n or 1))
+    s = s.strip().lower()
+    if len(s) < n:
+        return {s}
+    return {s[i:i+n] for i in range(len(s) - n + 1)}
+
+
+def jaccard_char_ngrams(texto1: str, texto2: str, n: int = 3) -> float:
+    a = _char_ngrams(texto1, n)
+    b = _char_ngrams(texto2, n)
+    if not a or not b:
+        return 0.0
+    inter = len(a & b)
+    union = len(a | b)
+    if union == 0:
+        return 0.0
+    return inter / union
+
+
+def dice_char_ngrams(texto1: str, texto2: str, n: int = 3) -> float:
+    a = _char_ngrams(texto1, n)
+    b = _char_ngrams(texto2, n)
+    if not a or not b:
+        return 0.0
+    inter = len(a & b)
+    return (2 * inter) / (len(a) + len(b))
+
+
+def cosine_tfidf_char(texto1: str, texto2: str, n: int = 3) -> float:
+    """
+    Coseno de TF-IDF con n-gramas de caracteres.
+    n: tamaño del n-grama de caracteres (por ejemplo, 2, 3 o 4).
+    """
+    textos = [texto1 or "", texto2 or ""]
+    n = max(1, int(n or 1))
+    vectorizer = TfidfVectorizer(analyzer='char', ngram_range=(n, n), lowercase=True)
+    tfidf = vectorizer.fit_transform(textos)
+    sim = cosine_similarity(tfidf[0:1], tfidf[1:2])
+    return float(sim[0][0])
