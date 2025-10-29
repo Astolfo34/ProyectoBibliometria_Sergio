@@ -8,8 +8,10 @@ import os
 from html_structure.save_html_selenium import save_html
 import subprocess
 import sys
+import glob
+import bibtexparser
 
-import unificar
+from utils.unificar import unificar
 
 # Configuración y constantes
 URL_BIBLIOTECA = "https://library.uniquindio.edu.co/databases"  # Mantener la URL general
@@ -26,7 +28,24 @@ def check_and_setup_env():
         else:  # Linux/MacOS
             subprocess.run(['bash', 'config/setup_env.sh'])
 
-def main():
+def hay_bibtex_validos(carpeta_data: str = CARPETA_DATA) -> bool:
+	"""Devuelve True si existen archivos .bib parseables con al menos una entrada."""
+	pattern = os.path.join(carpeta_data, "*.bib")
+	archivos = glob.glob(pattern)
+	if not archivos:
+		return False
+	for bib in archivos:
+		try:
+			with open(bib, encoding="utf-8") as f:
+				db = bibtexparser.load(f)
+				if getattr(db, "entries", None):
+					return True
+		except Exception:
+			continue
+	return False
+
+
+def ejecutar_scraping():
 	import shutil
 	import time
 	driver, temp_profile_dir = configurar_driver()
@@ -69,17 +88,26 @@ def main():
 		shutil.rmtree(temp_profile_dir, ignore_errors=True)
 
 
-check_and_setup_env()
+def main():
+	check_and_setup_env()
+
+	if hay_bibtex_validos(CARPETA_DATA):
+		print("[Optimización] Se detectaron archivos BibTeX válidos en 'data/'. Se omite el scraping para optimizar recursos.")
+	else:
+		print("=== Iniciando scraping automatizado y guardado en carpeta 'data' ===")
+		ejecutar_scraping()
+		print("=== Proceso de scraping finalizado ===")
+
+	# Unificar archivos independientemente de si se scrapeó o no
+	unificar()
+	print("=== Unificación de archivos BibTeX completada ===")
+
 
 if __name__ == "__main__":
-	print("=== Iniciando scraping automatizado y guardado en carpeta 'data' ===")
 	main()
-	print("=== Proceso de scraping finalizado ===")
-	unificar.unificar() # unificamos los bib para obtener el archivo que scara los datos necesarios para los paises
-
-if __name__ == "__main__":
-    file_path = "data/unified_articles.csv"  # asegúrate de tenerlo listo
-    run_similarity_analysis(file_path) 
+	# Si deseas correr posteriormente análisis de similitud, ajusta la ruta adecuada
+	# file_path = "data/unified_articles.csv"
+	# run_similarity_analysis(file_path)
 
 
 
