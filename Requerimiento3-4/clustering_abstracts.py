@@ -2,7 +2,7 @@ import os
 import re
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.cluster.hierarchy import linkage, dendrogram
+from scipy.cluster.hierarchy import linkage, dendrogram, cophenet
 from scipy.spatial.distance import squareform
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
@@ -53,40 +53,69 @@ sim_matrix = cosine_similarity(tfidf_matrix)
 data_graficos_path = os.path.join(os.path.dirname(__file__), 'data_graficos')
 os.makedirs(data_graficos_path, exist_ok=True)
 
-# --- Clustering jerárquico ---
-def clustering_jerarquico(sim_matrix, metodo, labels):
-    print(f"\nGenerando dendrograma con método: {metodo}")
+# --- Preparar matriz de distancias (1 - similitud) ---
+distancia = 1 - sim_matrix
+distancia = np.clip(distancia, 0, None)
 
-    # Convertir similitud a distancia
-    distancia = 1 - sim_matrix
-    distancia = np.clip(distancia, 0, None)
+# Condensar matriz para linkage
+if distancia.shape[0] == 2:
+    dist_condensada = np.array([distancia[0, 1]])
+else:
+    dist_condensada = squareform(distancia, checks=False)
 
-    # Condensar matriz para linkage
-    if distancia.shape[0] == 2:
-        dist_condensada = np.array([distancia[0,1]])
-    else:
-        dist_condensada = squareform(distancia, checks=False)
+# --- Evaluar métodos con Coeficiente Cophenético (CCC) ---
+metodos = ['single', 'complete', 'average']
+resultados = {}
 
+print("\nEvaluando métodos de enlace (CCC más alto es mejor):")
+for metodo in metodos:
     linked = linkage(dist_condensada, method=metodo)
+    ccc, _ = cophenet(linked, dist_condensada)
+    resultados[metodo] = {"linked": linked, "ccc": float(ccc)}
+    print(f"- {metodo}: CCC = {ccc:.3f}")
 
-    # Dendrograma
-    plt.figure(figsize=(12,6))
-    dendrogram(linked, labels=labels, orientation='top', leaf_rotation=90)
-    plt.title(f"Dendrograma - Clustering Jerárquico ({metodo})")
+# Seleccionar mejor método
+mejor_metodo = max(resultados, key=lambda k: resultados[k]["ccc"]) if resultados else None
+if mejor_metodo:
+    print(f"\nMejor método según CCC: {mejor_metodo} (CCC = {resultados[mejor_metodo]['ccc']:.3f})")
+
+# --- Graficar dendrogramas, resaltando el mejor ---
+for metodo in metodos:
+    info = resultados[metodo]
+    plt.figure(figsize=(12, 6))
+    dendrogram(info["linked"], labels=labels_vis, orientation='top', leaf_rotation=90)
+    titulo = f"Dendrograma - Clustering Jerárquico ({metodo}) | CCC={info['ccc']:.3f}"
+    if metodo == mejor_metodo:
+        titulo += " [Mejor]"
+    plt.title(titulo)
     plt.xlabel("Abstracts")
     plt.ylabel("Distancia")
     plt.tight_layout()
 
-    # Guardar el gráfico en la carpeta 'data_graficos'
     grafico_path = os.path.join(data_graficos_path, f'dendrograma_{metodo}.png')
     plt.savefig(grafico_path)
     print(f"Gráfico guardado en: {grafico_path}")
     plt.close()
 
-# --- Ejecutar los 3 métodos ---
-metodos = ['single', 'complete', 'average']
-for m in metodos:
-    clustering_jerarquico(sim_matrix, m, labels_vis)
+# --- Resumen visual: barras de CCC por método ---
+try:
+    plt.figure(figsize=(8, 5))
+    metodos_orden = sorted(metodos, key=lambda m: resultados[m]["ccc"], reverse=True)
+    valores = [resultados[m]["ccc"] for m in metodos_orden]
+    colores = ["tab:green" if m == mejor_metodo else "tab:blue" for m in metodos_orden]
+    plt.bar(metodos_orden, valores, color=colores)
+    plt.ylabel("Coeficiente Cophenético (CCC)")
+    plt.title("Comparación de métodos por CCC (más alto es mejor)")
+    for i, v in enumerate(valores):
+        plt.text(i, v + 0.005, f"{v:.3f}", ha='center', va='bottom', fontsize=9)
+    plt.ylim(0, min(1.0, max(valores) + 0.05))
+    plt.tight_layout()
+    resumen_path = os.path.join(data_graficos_path, 'resumen_ccc_metodos.png')
+    plt.savefig(resumen_path)
+    print(f"Resumen visual guardado en: {resumen_path}")
+    plt.close()
+except Exception as e:
+    print(f"No se pudo generar el resumen visual de CCC: {e}")
 
 # --- Observaciones ---
 print("""
