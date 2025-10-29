@@ -7,13 +7,14 @@ scikit-learn
 networkx
 tqdm
 pandas
-sentence_transformers
+sentence-transformers
 Levenshtein
 requests
 geopandas
 pycountry
 python-dotenv
-bs4
+beautifulsoup4
 bibtexparser
 wordcloud
 pillow
+seaborn
