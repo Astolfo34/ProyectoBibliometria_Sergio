@@ -7,13 +7,6 @@
   <key id="d1" for="node" attr.name="authors" attr.type="string" />
   <key id="d0" for="node" attr.name="title" attr.type="string" />
   <graph edgedefault="directed">
-    <node id="Kohnke2025">
-      <data key="d0">Generative AI</data>
-      <data key="d1">Lucas Kohnke</data>
-      <data key="d2">2025</data>
-      <data key="d3" />
-      <data key="d4">https://link-springer-com.crai.referencistas.com/rwe/10.1007/978-3-031-51447-0_100-1</data>
-    </node>
     <node id="Qamar2025">
       <data key="d0">Generative AI</data>
       <data key="d1">Usman Qamar; Muhammad Summair Raza</data>
@@ -21,10 +14,17 @@
       <data key="d3" />
       <data key="d4">https://link-springer-com.crai.referencistas.com/book/9789819513772</data>
     </node>
-    <edge source="Kohnke2025" target="Qamar2025">
+    <node id="Kohnke2025">
+      <data key="d0">Generative AI</data>
+      <data key="d1">Lucas Kohnke</data>
+      <data key="d2">2025</data>
+      <data key="d3" />
+      <data key="d4">https://link-springer-com.crai.referencistas.com/rwe/10.1007/978-3-031-51447-0_100-1</data>
+    </node>
+    <edge source="Qamar2025" target="Kohnke2025">
       <data key="d5">0.7</data>
     </edge>
-    <edge source="Qamar2025" target="Kohnke2025">
+    <edge source="Kohnke2025" target="Qamar2025">
       <data key="d5">0.7</data>
     </edge>
   </graph>

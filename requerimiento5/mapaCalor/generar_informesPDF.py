@@ -23,6 +23,14 @@ def find_latest_image(folder: Path, pattern: str = "*.png") -> Optional[Path]:
 	return imgs[0] if imgs else None
 
 
+def find_latest_file(folder: Path, pattern: str) -> Optional[Path]:
+	"""Devuelve el archivo más reciente que cumple el patrón o None."""
+	if not folder.exists():
+		return None
+	files = sorted(folder.glob(pattern), key=lambda p: p.stat().st_mtime, reverse=True)
+	return files[0] if files else None
+
+
 def add_cover_page(pdf: PdfPages, title: str, subtitle: str, bullets: List[str]) -> None:
 	plt.figure(figsize=(11.69, 8.27))  # A4 landscape approx in inches
 	plt.axis('off')
@@ -45,6 +53,41 @@ def add_image_page(pdf: PdfPages, image_path: Path, title: str, caption: str = "
 	plt.axis('off')
 	if caption:
 		plt.figtext(0.5, 0.02, caption, wrap=True, ha='center', fontsize=10)
+	pdf.savefig(bbox_inches='tight')
+	plt.close()
+
+
+def add_texts_side_by_side(pdf: PdfPages, title: str, left_title: str, left_text: str, right_title: str, right_text: str) -> None:
+	"""Agrega una página con dos columnas de texto (izquierda/derecha) con envoltura conservadora."""
+	import textwrap
+
+	fig = plt.figure(figsize=(11.69, 8.27))
+	fig.suptitle(title, fontsize=16, weight='bold')
+	# Área sin ejes
+	ax = plt.subplot(1, 1, 1)
+	ax.axis('off')
+
+	# Márgenes y anchos de columna (landscape)
+	left_x = 0.06
+	right_x = 0.53
+	col_width = 46  # caracteres aprox. por columna
+	y_start = 0.88
+	line_h = 0.035
+
+	# Título columna izquierda
+	fig.text(left_x, y_start, left_title, ha='left', va='top', fontsize=12, weight='bold')
+	y = y_start - 0.05
+	for ln in textwrap.fill(left_text or "(vacío)", width=col_width).splitlines():
+		fig.text(left_x, y, ln, ha='left', va='top', fontsize=10)
+		y -= line_h
+
+	# Título columna derecha
+	fig.text(right_x, y_start, right_title, ha='left', va='top', fontsize=12, weight='bold')
+	y2 = y_start - 0.05
+	for ln in textwrap.fill(right_text or "(vacío)", width=col_width).splitlines():
+		fig.text(right_x, y2, ln, ha='left', va='top', fontsize=10)
+		y2 -= line_h
+
 	pdf.savefig(bbox_inches='tight')
 	plt.close()
 
@@ -363,6 +406,137 @@ def main() -> int:
 				)
 		except Exception as e:
 			logger.warning(f"Sección de grafos omitida por error no crítico: {e}")
+
+		# === Sección: Comparación de textos y similitud (Req2) ===
+		try:
+			req2_dir = project_root / 'algoritmosReq2' / 'data_req2'
+			latest_csv = find_latest_file(req2_dir, 'similarity_results_*.csv') if req2_dir.exists() else None
+			latest_plot = find_latest_image(req2_dir, 'similarity_plot_*.png') if req2_dir.exists() else None
+
+			if not (latest_csv or latest_plot):
+				add_cover_page(
+					pdf,
+					title="Resultados de similitud (Req2) no disponibles",
+					subtitle="No se encontraron artefactos en algoritmosReq2/data_req2/",
+					bullets=[
+						"Ejecuta algoritmosReq2/mainReq2.py para generar CSV e imagen.",
+					],
+				)
+			else:
+				# Leer textos y resultados del CSV más reciente
+				texts: Tuple[str, str] | None = None
+				best_algo: Optional[str] = None
+				best_score: Optional[float] = None
+				result_map: dict = {}
+				if latest_csv and latest_csv.exists():
+					try:
+						import csv as _csv
+						with open(latest_csv, 'r', encoding='utf-8') as f:
+							reader = _csv.DictReader(f)
+							row = next(reader, None)
+							if row:
+								text1 = row.get('text1', '')
+								text2 = row.get('text2', '')
+								texts = (text1, text2)
+								# Extraer puntajes numéricos
+								keys_interes = [
+									'levenshtein', 'jaccard', 'cosine_tfidf', 'dice', 'overlap_coeff',
+									'weighted_jaccard_tfidf', 'jaro_winkler', 'jaccard_char', 'dice_char', 'semantic_sbert'
+								]
+								for k in keys_interes:
+									v = row.get(k)
+									try:
+										fv = float(v) if v not in (None, '', 'None') else None
+										result_map[k] = fv
+										if fv is not None and (best_score is None or fv > best_score):
+											best_score, best_algo = fv, k
+									except Exception:
+										result_map[k] = None
+					except Exception:
+						texts = None
+
+				# Página con textos comparados
+				if texts:
+					add_texts_side_by_side(
+						pdf,
+						title="Comparación de textos (Req2)",
+						left_title="Texto 1",
+						left_text=texts[0],
+						right_title="Texto 2",
+						right_text=texts[1],
+					)
+				else:
+					add_cover_page(
+						pdf,
+						title="Textos comparados no disponibles",
+						subtitle="No fue posible leer text1/text2 del CSV de resultados.",
+						bullets=[str(latest_csv) if latest_csv else "(sin CSV)"]
+					)
+
+				# Imagen de resultados por algoritmo
+				if latest_plot and latest_plot.exists():
+					add_image_page(
+						pdf,
+						latest_plot,
+						title="Similitud por algoritmo (Req2)",
+						caption=f"Fuente: {latest_csv.name if latest_csv else ''}",
+					)
+				
+				# Conclusiones genéricas según mejor algoritmo
+				if best_algo is not None and best_score is not None:
+					conclu_map = {
+						'levenshtein': [
+							"El mayor puntaje se obtuvo con Levenshtein (ediciones).",
+							"Sugiere que los textos difieren principalmente por pequeñas variaciones (ortografía, orden o palabras puntuales).",
+						],
+						'jaccard': [
+							"Predomina el solapamiento de vocabulario (Jaccard por palabra).",
+							"Los textos comparten un conjunto relevante de términos, aunque no necesariamente en el mismo contexto.",
+						],
+						'cosine_tfidf': [
+							"Alta similitud en términos discriminativos (Cosine TF-IDF).",
+							"Indica coincidencia en conceptos clave más allá de palabras comunes.",
+						],
+						'dice': [
+							"Fuerte solapamiento léxico (Dice por palabra).",
+							"Las coincidencias de vocabulario son consistentes entre ambos textos.",
+						],
+						'overlap_coeff': [
+							"Coeficiente de solapamiento elevado.",
+							"Uno de los textos parece contener gran parte del vocabulario del otro.",
+						],
+						'weighted_jaccard_tfidf': [
+							"Solapamiento ponderado por relevancia (TF-IDF) destacado.",
+							"Los términos compartidos son además importantes dentro de cada texto.",
+						],
+						'jaro_winkler': [
+							"Alta similitud de cadenas (Jaro–Winkler).",
+							"Adecuado para títulos o fragmentos cortos con variaciones menores.",
+						],
+						'jaccard_char': [
+							"Gran coincidencia en n-gramas de caracteres (Jaccard).",
+							"Sugiere cercanía morfológica, incluso si cambia la segmentación en palabras.",
+						],
+						'dice_char': [
+							"Coincidencia alta de n-gramas de caracteres (Dice).",
+							"Indicativo de títulos o frases muy parecidas a nivel de caracteres.",
+						],
+						'semantic_sbert': [
+							"La similitud semántica (SBERT) es la más alta.",
+							"Los textos tratan temas muy cercanos incluso con vocabulario distinto.",
+						],
+					}
+					bul = [
+						f"Mejor algoritmo: {best_algo} con score ≈ {best_score:.3f}",
+					] + conclu_map.get(best_algo, ["El algoritmo con mayor puntaje sugiere una alta cercanía entre ambos textos."])
+					add_cover_page(
+						pdf,
+						title="Conclusiones (Req2)",
+						subtitle="Síntesis genérica basada en el algoritmo con mayor similitud",
+						bullets=bul,
+					)
+		except Exception as e:
+			logger.warning(f"Sección Req2 omitida por error no crítico: {e}")
 
 		# Página final con conclusiones genéricas
 		add_cover_page(

@@ -7,13 +7,6 @@
   <key id="d1" for="node" attr.name="authors" attr.type="string" />
   <key id="d0" for="node" attr.name="title" attr.type="string" />
   <graph edgedefault="directed">
-    <node id="Schreiner2026">
-      <data key="d0">Thinking Programs</data>
-      <data key="d1">Wolfgang Schreiner</data>
-      <data key="d2">2026</data>
-      <data key="d3" />
-      <data key="d4">https://link-springer-com.crai.referencistas.com/book/10.1007/978-3-031-99705-1</data>
-    </node>
     <node id="Schreiner2021">
       <data key="d0">Thinking Programs</data>
       <data key="d1">Wolfgang Schreiner</data>
@@ -21,10 +14,17 @@
       <data key="d3" />
       <data key="d4">https://link-springer-com.crai.referencistas.com/book/10.1007/978-3-030-80507-4</data>
     </node>
-    <edge source="Schreiner2026" target="Schreiner2021">
+    <node id="Schreiner2026">
+      <data key="d0">Thinking Programs</data>
+      <data key="d1">Wolfgang Schreiner</data>
+      <data key="d2">2026</data>
+      <data key="d3" />
+      <data key="d4">https://link-springer-com.crai.referencistas.com/book/10.1007/978-3-031-99705-1</data>
+    </node>
+    <edge source="Schreiner2021" target="Schreiner2026">
       <data key="d5">1.0</data>
     </edge>
-    <edge source="Schreiner2021" target="Schreiner2026">
+    <edge source="Schreiner2026" target="Schreiner2021">
       <data key="d5">1.0</data>
     </edge>
   </graph>
