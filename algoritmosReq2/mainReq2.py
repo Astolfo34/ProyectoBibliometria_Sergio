@@ -13,6 +13,7 @@ Flujo:
 from __future__ import annotations
 
 import os
+import sys
 import re
 import json
 import time
@@ -50,6 +51,9 @@ try:
 		jaccard_char_ngrams,
 		dice_char_ngrams,
 		cosine_tfidf_char,
+		overlap_coefficient,
+		weighted_jaccard_tfidf,
+		jaro_winkler_similarity,
 	)
 except Exception:
 	from similarity_classical import (
@@ -60,6 +64,9 @@ except Exception:
 		jaccard_char_ngrams,
 		dice_char_ngrams,
 		cosine_tfidf_char,
+		overlap_coefficient,
+		weighted_jaccard_tfidf,
+		jaro_winkler_similarity,
 	)
 
 try:
@@ -103,6 +110,15 @@ def cprint(msg: str, style: str | None = None):
 ROOT = os.path.dirname(os.path.dirname(__file__))
 GRAFO_DIR = os.path.join(ROOT, "Scripts grafo", "salida_grafo")
 GRAFO_JSON = os.path.join(GRAFO_DIR, "grafo_adj.json")
+
+# Aseguramos que el paquete utils/ sea importable desde este script
+if ROOT not in sys.path:
+	sys.path.insert(0, ROOT)
+try:
+	from utils.load_data import load_bib_data
+	LOAD_OK = True
+except Exception as e:
+	LOAD_OK = False
 
 
 def cargar_grafo_adjacencia(path: str) -> Dict[str, Dict[str, float]]:
@@ -148,6 +164,78 @@ def top_autores_mas_citados(adj: Dict[str, Dict[str, float]], n: int = 10) -> Li
 	return ordenado[: max(1, min(10, n))]
 
 
+# ---------------------- Selección de artículos (abstracts) ----------------------
+def seleccionar_articulos_por_indice(df) -> Tuple[dict, dict]:
+	"""Permite al usuario seleccionar dos artículos del DataFrame para comparar.
+
+	Devuelve dos dicts (registros) con al menos las claves: 'titulo' y 'resumen'.
+	Si el resumen está vacío, se usa (titulo + autores) como fallback para evitar textos vacíos.
+	"""
+	if df is None or len(df) == 0:
+		raise ValueError("No hay artículos disponibles para seleccionar.")
+
+	# Mostrar una tabla simple (primeros N si son muchos)
+	N_MOSTRAR = min(50, len(df))
+	if console:
+		table = Table(show_header=True, header_style="bold blue")
+		table.add_column("#", justify="right")
+		table.add_column("Archivo", justify="left")
+		table.add_column("Título", justify="left", no_wrap=True)
+		table.add_column("Tiene resumen?", justify="center")
+		for i in range(N_MOSTRAR):
+			row = df.iloc[i]
+			tiene_res = "✔" if (row.get("resumen") or "").strip() else "✖"
+			table.add_row(str(i), str(row.get("archivo", "?")), str(row.get("titulo", "(sin título)"))[:100], tiene_res)
+		console.print(Panel(table, title=f"Artículos disponibles (0–{N_MOSTRAR-1} de {len(df)})", border_style="cyan"))
+	else:
+		print(f"Artículos disponibles (0–{N_MOSTRAR-1} de {len(df)}):")
+		for i in range(N_MOSTRAR):
+			row = df.iloc[i]
+			tiene_res = "SI" if (row.get("resumen") or "").strip() else "NO"
+			print(f"{i:3d}. {row.get('archivo','?')} | {row.get('titulo','(sin título)')[:100]} | resumen: {tiene_res}")
+
+	# Pedimos dos índices válidos
+	def _ask_idx(msg: str) -> int:
+		while True:
+			try:
+				if console:
+					idx_str = Prompt.ask(msg)
+				else:
+					idx_str = input(f"{msg}: ")
+				idx = int(idx_str)
+				if 0 <= idx < len(df):
+					return idx
+				cprint(f"Índice fuera de rango (0–{len(df)-1}).", "warn")
+			except Exception:
+				cprint("Entrada inválida, ingresa un número.", "warn")
+
+	idx1 = _ask_idx("Selecciona el índice del Artículo 1")
+	idx2 = _ask_idx("Selecciona el índice del Artículo 2")
+	while idx2 == idx1:
+		cprint("Los dos índices no pueden ser iguales. Elige otro artículo.", "warn")
+		idx2 = _ask_idx("Selecciona el índice del Artículo 2")
+
+	r1 = df.iloc[idx1].to_dict()
+	r2 = df.iloc[idx2].to_dict()
+
+	# Fallback de resumen vacío → usar título + autores
+	def _texto_abstract_like(r: dict) -> str:
+		titulo = (r.get("titulo") or "").strip()
+		resumen = (r.get("resumen") or "").strip()
+		autores = (r.get("autores") or "").strip()
+		if resumen:
+			return f"{titulo}. {resumen}".strip()
+		base = titulo
+		if autores:
+			base = f"{base}. {autores}"
+		return base.strip() or titulo or autores or ""
+
+	r1["texto_para_comparar"] = _texto_abstract_like(r1)
+	r2["texto_para_comparar"] = _texto_abstract_like(r2)
+
+	return r1, r2
+
+
 # ---------------------- Ejecución de algoritmos ----------------------
 def ejecutar_algoritmos(text1: str, text2: str) -> Dict[str, float | None]:
 	resultados: Dict[str, float | None] = {}
@@ -185,9 +273,13 @@ def ejecutar_algoritmos(text1: str, text2: str) -> Dict[str, float | None]:
 			resultados["cosine_tfidf"] = float(cosine_tfidf_char(text1, text2, n=n_char))
 		else:
 			ct = float(cosine_tfidf_similarity(text1, text2))
-			# Si sale 0 por falta de vocabulario compartido y los textos son realmente cortos, probamos char
-			if ct == 0.0 and (len(tok1) < 5 or len(tok2) < 5):
-				ct = float(cosine_tfidf_char(text1, text2, n=n_char))
+			# Si sale 0 por falta de vocabulario compartido, probamos TF-IDF de caracteres con n decreciente
+			if ct == 0.0:
+				for n_try in (n_char, max(1, n_char - 1), 1):
+					ct_char = float(cosine_tfidf_char(text1, text2, n=n_try))
+					if ct_char > 0.0:
+						ct = ct_char
+						break
 			resultados["cosine_tfidf"] = ct
 	except Exception:
 		resultados["cosine_tfidf"] = None
@@ -197,13 +289,43 @@ def ejecutar_algoritmos(text1: str, text2: str) -> Dict[str, float | None]:
 	except Exception:
 		resultados["dice"] = None
 
-	# Métricas por n-gramas de caracteres (heurística de n)
+	# Métricas adicionales sensibles
 	try:
-		resultados["jaccard_char"] = float(jaccard_char_ngrams(text1, text2, n=n_char))
+		resultados["overlap_coeff"] = float(overlap_coefficient(text1, text2))
+	except Exception:
+		resultados["overlap_coeff"] = None
+	try:
+		resultados["weighted_jaccard_tfidf"] = float(weighted_jaccard_tfidf(text1, text2))
+	except Exception:
+		resultados["weighted_jaccard_tfidf"] = None
+	try:
+		resultados["jaro_winkler"] = float(jaro_winkler_similarity(text1, text2))
+	except Exception:
+		resultados["jaro_winkler"] = None
+
+	# Métricas por n-gramas de caracteres (heurística de n) con fallback n→n-1→1
+	try:
+		jc = float(jaccard_char_ngrams(text1, text2, n=n_char))
+		if jc == 0.0 and n_char > 1:
+			for n_try in (max(1, n_char - 1), 1):
+				jc2 = float(jaccard_char_ngrams(text1, text2, n=n_try))
+				if jc2 > 0.0:
+					jc = jc2
+					n_char = n_try
+					break
+		resultados["jaccard_char"] = jc
 	except Exception:
 		resultados["jaccard_char"] = None
 	try:
-		resultados["dice_char"] = float(dice_char_ngrams(text1, text2, n=n_char))
+		dc = float(dice_char_ngrams(text1, text2, n=n_char))
+		if dc == 0.0 and n_char > 1:
+			for n_try in (max(1, n_char - 1), 1):
+				dc2 = float(dice_char_ngrams(text1, text2, n=n_try))
+				if dc2 > 0.0:
+					dc = dc2
+					n_char = n_try
+					break
+		resultados["dice_char"] = dc
 	except Exception:
 		resultados["dice_char"] = None
 
@@ -217,6 +339,19 @@ def ejecutar_algoritmos(text1: str, text2: str) -> Dict[str, float | None]:
 
 	# Guardamos el n de char-ngrams usado (para logging/CSV)
 	resultados["char_ngram_n"] = n_char
+
+	# Fallbacks adicionales de solapamiento si quedaron en cero
+	try:
+		if resultados.get("overlap_coeff") == 0.0:
+			# Recalcular overlap con tokens crudos
+			import re as _re
+			r1 = set((text1 or "").lower().split())
+			r2 = set((text2 or "").lower().split())
+			if r1 and r2:
+				res = len(r1 & r2) / min(len(r1), len(r2)) if min(len(r1), len(r2)) else 0.0
+				resultados["overlap_coeff"] = max(resultados.get("overlap_coeff") or 0.0, float(res))
+	except Exception:
+		pass
 	return resultados
 
 
@@ -241,6 +376,9 @@ def guardar_csv(text1: str, text2: str, resultados: Dict[str, float | None]) -> 
 		"jaccard",
 		"cosine_tfidf",
 		"dice",
+		"overlap_coeff",
+		"weighted_jaccard_tfidf",
+		"jaro_winkler",
 		"jaccard_char",
 		"dice_char",
 		"char_ngram_n",
@@ -261,6 +399,9 @@ def guardar_csv(text1: str, text2: str, resultados: Dict[str, float | None]) -> 
 				"jaccard": resultados.get("jaccard"),
 				"cosine_tfidf": resultados.get("cosine_tfidf"),
 				"dice": resultados.get("dice"),
+				"overlap_coeff": resultados.get("overlap_coeff"),
+				"weighted_jaccard_tfidf": resultados.get("weighted_jaccard_tfidf"),
+				"jaro_winkler": resultados.get("jaro_winkler"),
 				"semantic_sbert": resultados.get("semantic_sbert"),
 				"jaccard_char": resultados.get("jaccard_char"),
 				"dice_char": resultados.get("dice_char"),
@@ -282,6 +423,9 @@ def plot_resultados(resultados: Dict[str, float | None]) -> str:
 		"Jaccard (word)",
 		"Cosine TF-IDF",
 		"Dice (word)",
+		"Overlap coeff",
+		"Weighted Jaccard TF-IDF",
+		"Jaro-Winkler",
 		"Jaccard (char)",
 		"Dice (char)",
 		"Semantic SBERT",
@@ -291,6 +435,9 @@ def plot_resultados(resultados: Dict[str, float | None]) -> str:
 		"jaccard",
 		"cosine_tfidf",
 		"dice",
+		"overlap_coeff",
+		"weighted_jaccard_tfidf",
+		"jaro_winkler",
 		"jaccard_char",
 		"dice_char",
 		"semantic_sbert",
@@ -504,25 +651,44 @@ def main():
 	else:
 		cprint("No hay grafo cargado. Se omitirá el TOP de autores.", "warn")
 
-	# Pedir textos (validando que no estén vacíos)
-	cprint("\nIngresa los textos a comparar:", "info")
-	def _ask_pair() -> tuple[str, str]:
-		if console:
-			t1 = Prompt.ask("[bold]Texto 1[/bold]")
-			t2 = Prompt.ask("[bold]Texto 2[/bold]")
-		else:
-			t1 = input("Texto 1: ")
-			t2 = input("Texto 2: ")
-		return (t1 or "").strip(), (t2 or "").strip()
+	# Cargar artículos y seleccionar dos para comparar (ABSTRACTS)
+	text1 = text2 = ""
+	if LOAD_OK:
+		try:
+			df = load_bib_data(os.path.join(ROOT, "data"))
+			if len(df) >= 2:
+				cprint("\nSelecciona dos artículos; se compararán sus abstracts (con fallback a título si falta)", "info")
+				art1, art2 = seleccionar_articulos_por_indice(df)
+				text1 = art1.get("texto_para_comparar", "")
+				text2 = art2.get("texto_para_comparar", "")
+				# Mensaje de contexto
+				cprint(f"Artículo 1: {art1.get('titulo','(sin título)')}", "ok")
+				cprint(f"Artículo 2: {art2.get('titulo','(sin título)')}", "ok")
+			else:
+				cprint("No hay suficientes artículos en data/ para seleccionar. Se pedirá texto manual.", "warn")
+		except Exception as e:
+			cprint(f"No se pudieron cargar artículos desde data/: {e}", "warn")
 
-	text1, text2 = _ask_pair()
-	attempt = 0
-	while (not text1) or (not text2):
-		attempt += 1
-		cprint("Los textos no pueden estar vacíos. Inténtalo nuevamente.", "warn")
-		if attempt >= 2:
-			cprint("Sugerencia: pega títulos o resúmenes para obtener valores > 0.", "info")
+	# Fallback: pedir textos manualmente si no fue posible cargar abstracts
+	if not text1 or not text2:
+		cprint("\nIngresa los textos a comparar:", "info")
+		def _ask_pair() -> tuple[str, str]:
+			if console:
+				t1 = Prompt.ask("[bold]Texto 1[/bold]")
+				t2 = Prompt.ask("[bold]Texto 2[/bold]")
+			else:
+				t1 = input("Texto 1: ")
+				t2 = input("Texto 2: ")
+			return (t1 or "").strip(), (t2 or "").strip()
+
 		text1, text2 = _ask_pair()
+		attempt = 0
+		while (not text1) or (not text2):
+			attempt += 1
+			cprint("Los textos no pueden estar vacíos. Inténtalo nuevamente.", "warn")
+			if attempt >= 2:
+				cprint("Sugerencia: pega títulos o resúmenes para obtener valores > 0.", "info")
+			text1, text2 = _ask_pair()
 
 	# Ejecutar algoritmos
 	cprint("\nEjecutando algoritmos de similitud...", "info")

@@ -1,2 +1,0 @@
-timestamp,text1,text2,len_text1,len_text2,levenshtein,jaccard,cosine_tfidf,dice,jaccard_char,dice_char,char_ngram_n,semantic_sbert
-20251029_133128,1,2,1,1,0.0,0.0,0.0,0.0,0.0,0.0,1,0.0
